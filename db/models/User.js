@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../sequelize.js";
-
 import { emailRegExp } from "../constants/authConstants.js";
+import UserFollow from "./UserFollow.js";
 
 const User = sequelize.define("user", {
   id: {
@@ -36,6 +36,20 @@ const User = sequelize.define("user", {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
+});
+
+User.belongsToMany(User, {
+  through: UserFollow,
+  as: "Followers",
+  foreignKey: "followingId",
+  otherKey: "followerId",
+});
+
+User.belongsToMany(User, {
+  through: UserFollow,
+  as: "Following",
+  foreignKey: "followerId",
+  otherKey: "followingId",
 });
 
 export default User;
