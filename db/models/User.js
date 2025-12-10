@@ -27,6 +27,20 @@ const User = sequelize.define("user", {
     allowNull: false,
   },
 
+  username: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+
+  avatar: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    defaultValue: null,
+    validate: {
+      isUrl: true,
+    },
+  },
+
   token: {
     type: DataTypes.STRING,
     allowNull: true,
