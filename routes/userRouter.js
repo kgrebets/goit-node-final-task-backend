@@ -46,6 +46,10 @@ const userRouter = Router();
  *                     type: integer
  *                   email:
  *                     type: string
+ *                   username:
+ *                     type: string
+ *                   avatar:
+ *                     type: string
  *       401:
  *         description: Unauthorized
  *       404:
@@ -74,6 +78,10 @@ userRouter.get("/:userId/followers", authenticate, getFollowersController);
  *                   id:
  *                     type: integer
  *                   email:
+ *                     type: string
+ *                   username:
+ *                     type: string
+ *                   avatar:
  *                     type: string
  *       401:
  *         description: Unauthorized

@@ -12,7 +12,7 @@ const getUserById = async (id) => {
 const getFollowers = async (userId) => {
   const user = await getUserById(userId);
   const followers = await user.getFollowers({
-    attributes: ["id", "email"],
+    attributes: ["id", "email", "username", "avatar"],
     order: [["id", "ASC"]],
   });
   return followers;
@@ -21,7 +21,7 @@ const getFollowers = async (userId) => {
 const getFollowing = async (userId) => {
   const user = await getUserById(userId);
   const following = await user.getFollowing({
-    attributes: ["id", "email"],
+    attributes: ["id", "email", "username", "avatar"],
     order: [["id", "ASC"]],
   });
   return following;
