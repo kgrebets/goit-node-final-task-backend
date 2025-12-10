@@ -11,6 +11,7 @@ import errorHandler from "./middlewares/errorHandler.js";
 
 import authRouter from "./routes/authRouter.js";
 import testimonialRouter from "./routes/testimonialRouter.js";
+import swaggerDocs from "./swagger/swagger.js";
 
 // import User from "./db/models/User.js";
 // import Testimonial from "./db/models/Testimonial.js";
@@ -25,6 +26,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
+swaggerDocs(app);
+
 app.use("/api/auth", authRouter);
 app.use("/api/testimonials", testimonialRouter);
 
@@ -33,8 +36,8 @@ app.use(errorHandler);
 
 await connectDatabase();
 
-const port = Number(process.env.PORT) | 3000;
+const port = Number(process.env.PORT) || 3000;
 
 app.listen(port, () => {
-  console.log("Server is running. Use our API on port: 3000");
+  console.log(`Server is running. Use our API on port: ${port}`);
 });
