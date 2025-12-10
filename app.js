@@ -11,6 +11,7 @@ import errorHandler from "./middlewares/errorHandler.js";
 
 import authRouter from "./routes/authRouter.js";
 import testimonialRouter from "./routes/testimonialRouter.js";
+import userRouter from "./routes/userRouter.js";
 import swaggerDocs from "./swagger/swagger.js";
 
 // import User from "./db/models/User.js";
@@ -30,6 +31,7 @@ swaggerDocs(app);
 
 app.use("/api/auth", authRouter);
 app.use("/api/testimonials", testimonialRouter);
+app.use("/api/users", userRouter);
 
 app.use(notFoundHander);
 app.use(errorHandler);
