@@ -46,7 +46,7 @@ const Recipe = sequelize.define("recipe", {
     allowNull: false,
   },
   ingredients: {
-    type: DataTypes.JSON,
+    type: DataTypes.JSONB,
     allowNull: false,
     // Example:
     //{ "id": "640c2dd963a319ea671e367e", "measure": "175g" },

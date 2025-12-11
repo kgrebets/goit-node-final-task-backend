@@ -1,5 +1,5 @@
 import Recipe from "../db/models/Recipe.js";
-import { Op } from "sequelize";
+import { Op, Sequelize } from "sequelize";
 
 export const getRecipes = async ({
   page,
@@ -16,16 +16,22 @@ export const getRecipes = async ({
   const whereClause = {};
 
   if (category) {
-    whereClause.category = category;
+    Sequelize.where(
+      Sequelize.fn("LOWER", Sequelize.col("category")),
+      category.toLowerCase()
+    );
   }
 
   if (area) {
-    whereClause.area = area;
+    whereClause.area = Sequelize.where(
+      Sequelize.fn("LOWER", Sequelize.col("area")),
+      area.toLowerCase()
+    );
   }
 
   if (ingredient) {
     whereClause.ingredients = {
-      [Op.like]: `%${ingredient}%`,
+      [Op.contains]: [{ id: ingredient }],
     };
   }
 
