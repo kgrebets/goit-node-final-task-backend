@@ -14,11 +14,18 @@ import testimonialRouter from "./routes/testimonialRouter.js";
 import userRouter from "./routes/userRouter.js";
 import swaggerDocs from "./swagger/swagger.js";
 
-// import User from "./db/models/User.js";
-// import Testimonial from "./db/models/Testimonial.js";
 
-//  User.sync({ alter: true });
-//  Testimonial.sync({ alter: true });
+
+
+
+//import User from "./db/models/User.js";
+//User.sync({ alter: true });
+
+//import UserFollow from "./db/models/UserFollow.js";
+//UserFollow.sync({ alter: true });
+
+//import Testimonial from "./db/models/Testimonial.js";
+//Testimonial.sync({ alter: true });
 
 const app = express();
 
