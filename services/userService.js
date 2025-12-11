@@ -1,5 +1,7 @@
 import User from "../db/models/User.js";
 import HttpError from "../helpers/HttpError.js";
+import Recipe from "../db/models/Recipe.js";
+import UserFollow from "../db/models/UserFollow.js";
 
 const getUserById = async (id) => {
   const user = await User.findByPk(id);
@@ -53,9 +55,28 @@ const unfollowUser = async (followerId, followingId) => {
   return true;
 };
 
+const getUserDetailed = async (userId) => {
+  const user = await User.findByPk(userId, {
+    attributes: ["id", "username", "email", "avatar"]
+  });
+  if (!user) return null;
+
+  const recipesCount = await Recipe.count({ where: { userid: userId } });
+  const followersCount = await UserFollow.count({ where: { followingId: userId } });
+
+  return {
+    avatar: user.avatar,
+    name: user.username,
+    email: user.email,
+    recipesCount,
+    followersCount
+  };
+};
+
 export default {
   getFollowers,
   getFollowing,
   followUser,
   unfollowUser,
+  getUserDetailed,
 };

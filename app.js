@@ -15,11 +15,11 @@ import recipesRouter from "./routes/recipesRouter.js";
 import swaggerDocs from "./swagger/swagger.js";
 import userRouter from "./routes/userRouter.js";
 
-//import User from "./db/models/User.js";
-//User.sync({ alter: true });
+// import User from "./db/models/User.js";
+// User.sync({ alter: true });
 
-//import UserFollow from "./db/models/UserFollow.js";
-//UserFollow.sync({ alter: true });
+// import UserFollow from "./db/models/UserFollow.js";
+// UserFollow.sync({ alter: true });
 
 // import Testimonial from "./db/models/Testimonial.js";
 // Testimonial.sync({ alter: true });
