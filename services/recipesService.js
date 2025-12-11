@@ -39,7 +39,7 @@ export const getRecipes = async ({
     where: whereClause,
     limit: pageSize,
     offset: offset,
-    order: [["createdAt", "DESC"]],
+    order: [["id", "DESC"]],
   });
 
   return {
