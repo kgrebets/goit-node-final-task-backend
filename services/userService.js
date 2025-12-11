@@ -1,4 +1,7 @@
 import User from "../db/models/User.js";
+import Recipe from "../db/models/Recipe.js";
+// import Favorite from "../db/models/Favorite.js";
+import UserFollow from "../db/models/UserFollow.js";
 import HttpError from "../helpers/HttpError.js";
 
 const getUserById = async (id) => {
@@ -53,9 +56,41 @@ const unfollowUser = async (followerId, followingId) => {
   return true;
 };
 
+const getCurrentUserInfo = async (userId) => {
+  const user = await getUserById(userId);
+
+  const recipesCount = await Recipe.count({
+    where: { owner: userId },
+  });
+
+  // const favoritesCount = await Favorite.count({
+  //   where: { userId },
+  // });
+
+  const followersCount = await UserFollow.count({
+    where: { followingId: userId },
+  });
+
+  const followingCount = await UserFollow.count({
+    where: { followerId: userId },
+  });
+
+  return {
+    id: user.id,
+    name: user.username,
+    email: user.email,
+    avatar: user.avatar,
+    recipesCount,
+    // favoritesCount,
+    followersCount,
+    followingCount,
+  };
+};
+
 export default {
   getFollowers,
   getFollowing,
   followUser,
   unfollowUser,
+  getCurrentUserInfo,
 };
