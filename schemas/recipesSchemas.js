@@ -7,3 +7,7 @@ export const getRecipesSchema = Joi.object({
   area: Joi.string().optional(),
   ingredient: Joi.string().optional(),
 });
+
+export const getRecipeByIdSchema = Joi.object({
+  id: Joi.string().required(),
+});

@@ -16,7 +16,7 @@ export const getRecipes = async ({
   const whereClause = {};
 
   if (category) {
-    Sequelize.where(
+    whereClause.category = Sequelize.where(
       Sequelize.fn("LOWER", Sequelize.col("category")),
       category.toLowerCase()
     );
@@ -48,4 +48,16 @@ export const getRecipes = async ({
     page: pageNumber,
     totalPages: Math.ceil(count / pageSize),
   };
+};
+
+export const getRecipeById = async (id) => {
+  const recipe = await Recipe.findByPk(id);
+
+  if (!recipe) {
+    const error = new Error("Recipe not found");
+    error.status = 404;
+    throw error;
+  }
+
+  return recipe;
 };
