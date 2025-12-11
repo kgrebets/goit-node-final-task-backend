@@ -1,7 +1,7 @@
-import Recipe from "../models/Recipe.js";
+import Recipe from "../db/models/Recipe.js";
 import { Op } from "sequelize";
 
-export const getRecipesService = async ({
+export const getRecipes = async ({
   page,
   limit,
   category,

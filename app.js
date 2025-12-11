@@ -11,13 +11,16 @@ import errorHandler from "./middlewares/errorHandler.js";
 
 import authRouter from "./routes/authRouter.js";
 import testimonialRouter from "./routes/testimonialRouter.js";
+import recipesRouter from "./routes/recipesRouter.js";
 import swaggerDocs from "./swagger/swagger.js";
 
 // import User from "./db/models/User.js";
 // import Testimonial from "./db/models/Testimonial.js";
+// import Recipe from "./db/models/Recipe.js";
 
-//  User.sync({ alter: true });
-//  Testimonial.sync({ alter: true });
+// User.sync({ alter: true });
+// Testimonial.sync({ alter: true });
+// Recipe.sync({ alter: true });
 
 const app = express();
 
@@ -30,7 +33,7 @@ swaggerDocs(app);
 
 app.use("/api/auth", authRouter);
 app.use("/api/testimonials", testimonialRouter);
-
+app.use("/api/recipes", recipesRouter);
 app.use(notFoundHander);
 app.use(errorHandler);
 

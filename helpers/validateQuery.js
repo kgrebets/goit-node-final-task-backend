@@ -11,7 +11,7 @@ const validateQuery = (schema) => {
       throw HttpError(400, error.message);
     }
 
-    req.query = value;
+    Object.assign(req.query, value);
 
     next();
   };
