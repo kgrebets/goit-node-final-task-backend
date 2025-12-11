@@ -53,7 +53,7 @@ export const getRecipes = async ({
         {
           model: Ingredient,
           as: "ingredient",
-          attributes: ["id", "name", "img"],
+          attributes: ["id", "name", "img", "description"],
         },
       ],
     },

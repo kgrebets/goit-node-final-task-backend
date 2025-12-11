@@ -29,6 +29,7 @@ export const getRecipesController = async (req, res, next) => {
           id: ri.ingredient.id,
           name: ri.ingredient.name,
           img: ri.ingredient.img,
+          description: ri.ingredient.description,
           measure: ri.measure,
         })) ?? [],
     }));
