@@ -22,8 +22,6 @@ import swaggerDocs from "./swagger/swagger.js";
 // Testimonial.sync({ alter: true });
 // Recipe.sync({ alter: true });
 import userRouter from "./routes/userRouter.js";
-import swaggerDocs from "./swagger/swagger.js";
-
 
 //import User from "./db/models/User.js";
 //User.sync({ alter: true });
@@ -36,7 +34,6 @@ import swaggerDocs from "./swagger/swagger.js";
 
 // import Area from "./db/models/Area.js";
 // await Area.sync({ alter: true });
-
 
 const app = express();
 
@@ -54,7 +51,7 @@ app.use("/api/recipes", recipesRouter);
 app.use(notFoundHander);
 app.use("/api/users", userRouter);
 
-app.use(notFoundHander)
+app.use(notFoundHander);
 app.use(errorHandler);
 
 await connectDatabase();
