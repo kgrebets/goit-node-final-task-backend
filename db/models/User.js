@@ -1,14 +1,15 @@
 import { DataTypes } from "sequelize";
-
-import sequalize from "../sequelize.js";
+import sequelize from "../sequelize.js";
 
 import { emailRegExp } from "../constants/authConstants.js";
 
-const User = sequalize.define("user", {
-  username: {
-    type: DataTypes.STRING,
-    allowNull: false,
+const User = sequelize.define("user", {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
   },
+
   email: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -20,20 +21,21 @@ const User = sequalize.define("user", {
       is: emailRegExp,
     },
   },
+
   password: {
     type: DataTypes.STRING,
     allowNull: false,
   },
+
   token: {
     type: DataTypes.STRING,
     allowNull: true,
   },
+
   verify: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
 });
-
-// User.sync({alter: true});
 
 export default User;
