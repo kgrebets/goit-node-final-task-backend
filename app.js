@@ -11,6 +11,16 @@ import errorHandler from "./middlewares/errorHandler.js";
 import authRouter from "./routes/authRouter.js";
 import areaRouter from "./routes/areaRouter.js";
 import testimonialRouter from "./routes/testimonialRouter.js";
+import recipesRouter from "./routes/recipesRouter.js";
+import swaggerDocs from "./swagger/swagger.js";
+
+// import User from "./db/models/User.js";
+// import Testimonial from "./db/models/Testimonial.js";
+// import Recipe from "./db/models/Recipe.js";
+
+// User.sync({ alter: true });
+// Testimonial.sync({ alter: true });
+// Recipe.sync({ alter: true });
 import userRouter from "./routes/userRouter.js";
 import swaggerDocs from "./swagger/swagger.js";
 
@@ -40,6 +50,8 @@ swaggerDocs(app);
 app.use("/api/auth", authRouter);
 app.use("/api/areas", areaRouter);
 app.use("/api/testimonials", testimonialRouter);
+app.use("/api/recipes", recipesRouter);
+app.use(notFoundHander);
 app.use("/api/users", userRouter);
 
 app.use(notFoundHander)

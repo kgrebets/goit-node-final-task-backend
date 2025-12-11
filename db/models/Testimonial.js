@@ -19,5 +19,4 @@ const Testimonial = sequelize.define("testimonial", {
   },
 });
 
-
 export default Testimonial;
