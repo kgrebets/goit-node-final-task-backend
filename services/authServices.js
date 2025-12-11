@@ -12,17 +12,11 @@ export const findUser = (where) => User.findOne({ where });
 
 export const registerUser = async (payload) => {
   const hashPassword = await bcrypt.hash(payload.password, 10);
-  const user = await User.create({ ...payload, password: hashPassword });
-
-  const verificationToken = createToken({ email: payload.email });
-
-  const verifyEmail = {
-    to: payload.email,
-    subject: "Verify email",
-    html: `<a href="${PUBLIC_URL}/api/auth/verify/${verificationToken}" target="_blank">Click verify email</a>`,
-  };
-
-  await sendEmail(verifyEmail);
+  const user = await User.create({
+    ...payload,
+    password: hashPassword,
+    verify: true,
+  });
 
   return user;
 };

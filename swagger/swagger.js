@@ -9,9 +9,18 @@ const swaggerOptions = {
       version: "1.0.0",
       description: "API documentation for Foodies project",
     },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    },
   },
 
-  apis: ["./routes/*.js"], 
+  apis: ["./routes/*.js"],
 };
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
