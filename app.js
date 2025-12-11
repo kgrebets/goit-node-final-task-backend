@@ -5,11 +5,11 @@ import cors from "cors";
 import "dotenv/config";
 
 import connectDatabase from "./db/connectDatabase.js";
-
 import notFoundHander from "./middlewares/notFoundHandler.js";
 import errorHandler from "./middlewares/errorHandler.js";
 
 import authRouter from "./routes/authRouter.js";
+import areaRouter from "./routes/areaRouter.js";
 
 const app = express();
 
@@ -19,8 +19,9 @@ app.use(express.json());
 app.use(express.static("public"));
 
 app.use("/api/auth", authRouter);
+app.use("/api/areas", areaRouter);
 
-app.use(notFoundHander);
+app.use(notFoundHander)
 app.use(errorHandler);
 
 await connectDatabase();
