@@ -48,8 +48,8 @@ app.use("/api/auth", authRouter);
 app.use("/api/areas", areaRouter);
 app.use("/api/testimonials", testimonialRouter);
 app.use("/api/recipes", recipesRouter);
-app.use(notFoundHander);
 app.use("/api/users", userRouter);
+app.use(notFoundHander);
 
 app.use(notFoundHander);
 app.use(errorHandler);
