@@ -13,14 +13,6 @@ import areaRouter from "./routes/areaRouter.js";
 import testimonialRouter from "./routes/testimonialRouter.js";
 import recipesRouter from "./routes/recipesRouter.js";
 import swaggerDocs from "./swagger/swagger.js";
-
-// import User from "./db/models/User.js";
-// import Testimonial from "./db/models/Testimonial.js";
-// import Recipe from "./db/models/Recipe.js";
-
-// User.sync({ alter: true });
-// Testimonial.sync({ alter: true });
-// Recipe.sync({ alter: true });
 import userRouter from "./routes/userRouter.js";
 
 //import User from "./db/models/User.js";
@@ -29,8 +21,8 @@ import userRouter from "./routes/userRouter.js";
 //import UserFollow from "./db/models/UserFollow.js";
 //UserFollow.sync({ alter: true });
 
-//import Testimonial from "./db/models/Testimonial.js";
-//Testimonial.sync({ alter: true });
+// import Testimonial from "./db/models/Testimonial.js";
+// Testimonial.sync({ alter: true });
 
 // import Area from "./db/models/Area.js";
 // await Area.sync({ alter: true });

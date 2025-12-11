@@ -3,13 +3,12 @@ import sequelize from "../sequelize.js";
 
 const Testimonial = sequelize.define("testimonial", {
   id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
+    type: DataTypes.STRING,
     primaryKey: true,
   },
 
   userId: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING,
     allowNull: false,
   },
 
