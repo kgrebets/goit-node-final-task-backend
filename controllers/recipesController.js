@@ -16,3 +16,14 @@ export const getRecipesController = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getRecipeByIdController = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const recipe = await recipesService.getRecipeById(id);
+    res.json(recipe);
+  } catch (error) {
+    next(error);
+  }
+};

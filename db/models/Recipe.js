@@ -3,8 +3,7 @@ import sequelize from "../sequelize.js";
 
 const Recipe = sequelize.define("recipe", {
   id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
+    type: DataTypes.STRING,
     primaryKey: true,
   },
   title: {
@@ -16,7 +15,7 @@ const Recipe = sequelize.define("recipe", {
     allowNull: false,
   },
   owner: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING,
     allowNull: false,
     references: {
       model: "users",
