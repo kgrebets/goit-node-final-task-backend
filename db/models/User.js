@@ -5,8 +5,7 @@ import UserFollow from "./UserFollow.js";
 
 const User = sequelize.define("user", {
   id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
+    type: DataTypes.STRING,
     primaryKey: true,
   },
 

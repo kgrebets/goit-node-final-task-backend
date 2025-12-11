@@ -10,7 +10,7 @@ const UserFollow = sequelize.define(
       autoIncrement: true,
     },
     followerId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: false,
       references: {
         model: "users",
@@ -20,7 +20,7 @@ const UserFollow = sequelize.define(
       onUpdate: "CASCADE",
     },
     followingId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: false,
       references: {
         model: "users",

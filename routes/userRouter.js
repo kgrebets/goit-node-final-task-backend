@@ -30,7 +30,7 @@ const userRouter = Router();
  *         name: userId
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *         description: ID of the user whose followers are requested
  *     responses:
  *       200:
@@ -43,7 +43,7 @@ const userRouter = Router();
  *                 type: object
  *                 properties:
  *                   id:
- *                     type: integer
+ *                     type: string
  *                   email:
  *                     type: string
  *                   username:
@@ -76,7 +76,7 @@ userRouter.get("/:userId/followers", authenticate, getFollowersController);
  *                 type: object
  *                 properties:
  *                   id:
- *                     type: integer
+ *                     type: string
  *                   email:
  *                     type: string
  *                   username:
@@ -101,7 +101,7 @@ userRouter.get("/following", authenticate, getFollowingController);
  *         name: userId
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *         description: ID of the user to follow
  *     responses:
  *       201:
@@ -128,7 +128,7 @@ userRouter.post("/:userId/follow", authenticate, followUserController);
  *         name: userId
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *         description: ID of the user to unfollow
  *     responses:
  *       200:

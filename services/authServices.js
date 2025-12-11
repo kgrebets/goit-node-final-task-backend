@@ -5,6 +5,7 @@ import User from "../db/models/User.js";
 import HttpError from "../helpers/HttpError.js";
 import { createToken, verifyToken } from "../helpers/jwt.js";
 import sendEmail from "../helpers/sendEmail.js";
+import { nanoid } from "nanoid";
 
 const { PUBLIC_URL } = process.env;
 
@@ -14,6 +15,7 @@ export const registerUser = async (payload) => {
   const hashPassword = await bcrypt.hash(payload.password, 10);
   const user = await User.create({
     ...payload,
+    id: nanoid(),
     password: hashPassword,
     verify: true,
   });
