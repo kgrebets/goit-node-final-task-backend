@@ -36,7 +36,7 @@ export const unfollowUserController = async (req, res) => {
 
 export const getCurrentUserController = async (req, res) => {
   const userId = req.user.id;
-  const userInfo = await userService.getCurrentUserInfo(userId);
+  const userInfo = await userService.getCurrentUserInfo(userId, req.user);
   res.status(200).json(userInfo);
 };
 

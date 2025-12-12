@@ -56,8 +56,7 @@ const unfollowUser = async (followerId, followingId) => {
   return true;
 };
 
-const getCurrentUserInfo = async (userId) => {
-  const user = await getUserById(userId);
+const getCurrentUserInfo = async (userId, user) => {
 
   const recipesCount = await Recipe.count({
     where: { owner: userId },
