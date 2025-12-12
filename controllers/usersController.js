@@ -34,15 +34,19 @@ export const unfollowUserController = async (req, res) => {
   });
 };
 
-export const getUserByIdController = async (req, res) => {
+
+export const getUserInfoByIdController = async (req, res) => {
   const { userId } = req.params;
-  try {
-    const user = await userService.getUserDetailed(userId);
+    const user = await userService.getUserInfo(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
     res.status(200).json(user);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+  };
+
+export const getCurrentUserController = async (req, res) => {
+  const userId = req.user.id;
+  const userInfo = await userService.getCurrentUserInfo(userId, req.user);
+  res.status(200).json(userInfo);
+
 };
 
 export default {
@@ -50,5 +54,6 @@ export default {
   getFollowingController,
   followUserController,
   unfollowUserController,
-  getUserByIdController,
+  getUserInfoByIdController,
+  getCurrentUserController,
 };

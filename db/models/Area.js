@@ -5,8 +5,8 @@ import Recipe from "./Recipe.js";
 const Area = sequelize.define("area", {
   id: { 
     type: DataTypes.STRING, 
-    primaryKey: true, 
-    autoIncrement: true },
+    primaryKey: true
+},
   name: {
     type: DataTypes.STRING,
     allowNull: false,
