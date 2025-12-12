@@ -75,9 +75,8 @@ const authRouter = Router();
  */
 authRouter.post("/register", validateBody(registerSchema), registerController);
 
-authRouter.get("/verify/:verificationToken", verifyController);
-
-authRouter.post("/verify", validateBody(emailSchema), resendVerifyController);
+//authRouter.get("/verify/:verificationToken", verifyController);
+//authRouter.post("/verify", validateBody(emailSchema), resendVerifyController);
 
 /**
  * @swagger
