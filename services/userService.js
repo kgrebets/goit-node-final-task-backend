@@ -1,4 +1,6 @@
 import User from "../db/models/User.js";
+import Recipe from "../db/models/Recipe.js";
+import UserFollow from "../db/models/UserFollow.js";
 import HttpError from "../helpers/HttpError.js";
 
 const getUserById = async (id) => {
@@ -53,9 +55,42 @@ const unfollowUser = async (followerId, followingId) => {
   return true;
 };
 
+const getCurrentUserInfo = async (userId, user) => {
+  const recipesCount = await Recipe.count({
+    where: { userid: userId },
+  });
+
+  // TODO: Implement favorites functionality
+  // const favoritesCount = await Favorite.count({
+  //   where: { userId },
+  // });
+  // Stub: returns -1 to indicate not implemented
+  const favoritesCount = -1;
+
+  const followersCount = await UserFollow.count({
+    where: { followingId: userId },
+  });
+
+  const followingCount = await UserFollow.count({
+    where: { followerId: userId },
+  });
+
+  return {
+    id: user.id,
+    name: user.username,
+    email: user.email,
+    avatar: user.avatar,
+    recipesCount,
+    favoritesCount,
+    followersCount,
+    followingCount,
+  };
+};
+
 export default {
   getFollowers,
   getFollowing,
   followUser,
   unfollowUser,
+  getCurrentUserInfo,
 };

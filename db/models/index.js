@@ -12,7 +12,8 @@ Testimonial.belongsTo(User, {
   onUpdate: "CASCADE",
 });
 
-Recipe.belongsTo(User, { foreignKey: "userid" });
+Recipe.belongsTo(User, { foreignKey: "userid", as: "Creator" });
+User.hasMany(Recipe, { foreignKey: "userid", as: "Recipes" });
 
 Recipe.hasMany(RecipeIngredient, {
   foreignKey: "recipeid",
