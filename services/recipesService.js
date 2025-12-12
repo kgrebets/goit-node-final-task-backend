@@ -95,3 +95,7 @@ export const getRecipeById = async (id) => {
 
   return recipe;
 };
+
+export const getPopularRecipes = async ({ page, limit }) => {
+  const offset = (page - 1) * limit;
+};

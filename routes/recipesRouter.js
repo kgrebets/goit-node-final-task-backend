@@ -9,6 +9,7 @@ import {
 import {
   getRecipesSchema,
   getRecipeByIdSchema,
+  getPopularRecipesSchema,
 } from "../schemas/recipesSchemas.js";
 
 const recipesRouter = Router();
@@ -21,6 +22,10 @@ recipesRouter.get(
   getRecipeByIdController
 );
 
-recipesRouter.get("/popular", getPopularRecipesController);
+recipesRouter.get(
+  "/popular",
+  validateQuery(getPopularRecipesSchema),
+  getPopularRecipesController
+);
 
 export default recipesRouter;
