@@ -17,15 +17,15 @@ const recipesRouter = Router();
 recipesRouter.get("/", validateQuery(getRecipesSchema), getRecipesController);
 
 recipesRouter.get(
-  "/:id",
-  validateParams(getRecipeByIdSchema),
-  getRecipeByIdController
-);
-
-recipesRouter.get(
   "/popular",
   validateQuery(getPopularRecipesSchema),
   getPopularRecipesController
+);
+
+recipesRouter.get(
+  "/:id",
+  validateParams(getRecipeByIdSchema),
+  getRecipeByIdController
 );
 
 export default recipesRouter;

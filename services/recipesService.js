@@ -97,5 +97,29 @@ export const getRecipeById = async (id) => {
 };
 
 export const getPopularRecipes = async ({ page, limit }) => {
+  page = Number(page) || 1;
+  limit = Number(limit) || 4;
   const offset = (page - 1) * limit;
+
+  const popular = await UserFavorite.findAll({
+    attributes: [
+      "recipeid",
+      [Sequelize.fn("COUNT", Sequelize.col("recipeid")), "favoritesCount"],
+    ],
+    group: ["recipeid"],
+    order: [[Sequelize.fn("COUNT", Sequelize.col("recipeid")), "DESC"]],
+    limit: limit,
+    offset,
+    raw: true,
+  });
+
+  const recipeIds = popular.map((p) => p.recipeid);
+
+  const recipes = await Recipe.findAll({
+    where: { id: { [Op.in]: recipeIds } },
+    attributes: ["id", "userid", "title", "thumb", "description"],
+    raw: true,
+  });
+
+  return recipes;
 };

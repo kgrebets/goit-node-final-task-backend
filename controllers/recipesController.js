@@ -65,12 +65,9 @@ export const getRecipeByIdController = async (req, res, next) => {
 
 export const getPopularRecipesController = async (req, res, next) => {
   try {
-    const popularRecipes = await recipesService.getPopularRecipes({ limit });
-
-    res.json({
-      total: popularRecipes.length,
-      results: popularRecipes,
-    });
+    const { page, limit } = req.query;
+    const data = await recipesService.getPopularRecipes({ page, limit });
+    res.json(data);
   } catch (error) {
     next(error);
   }
