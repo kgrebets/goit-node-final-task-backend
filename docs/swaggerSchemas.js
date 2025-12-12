@@ -19,16 +19,11 @@
  *           example: "https://ftp.goit.study/img/so-yummy/preview/Mediterranean%20Pasta%20Salad.jpg"
  *         description:
  *           type: string
- *           example: "A salad made with pasta, vegetables (such as tomatoes, cucumbers, and olives), feta cheese, and a dressing made with olive oil and lemon juice."
+ *           example: "A salad made with pasta, vegetables..."
  *         favoritesCount:
  *           type: integer
  *           example: 1
- */
-
-/**
- * @swagger
- * components:
- *   schemas:
+ *
  *     IngredientInRecipe:
  *       type: object
  *       properties:
@@ -79,12 +74,7 @@
  *           type: array
  *           items:
  *             $ref: '#/components/schemas/IngredientInRecipe'
- */
-
-/**
- * @swagger
- * components:
- *   schemas:
+ *
  *     RecipePreview:
  *       type: object
  *       properties:
@@ -109,4 +99,21 @@
  *         description:
  *           type: string
  *           example: "Cookies are seasonless, do you agree with me?..."
+ *
+ *     RecipesListResponse:
+ *       type: object
+ *       properties:
+ *         total:
+ *           type: integer
+ *           example: 285
+ *         page:
+ *           type: integer
+ *           example: 1
+ *         totalPages:
+ *           type: integer
+ *           example: 24
+ *         results:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/RecipePreview'
  */
