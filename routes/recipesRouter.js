@@ -4,6 +4,7 @@ import validateQuery from "../helpers/validateQuery.js";
 import {
   getRecipesController,
   getRecipeByIdController,
+  getPopularRecipesController,
 } from "../controllers/recipesController.js";
 import {
   getRecipesSchema,
@@ -19,5 +20,7 @@ recipesRouter.get(
   validateParams(getRecipeByIdSchema),
   getRecipeByIdController
 );
+
+recipesRouter.get("/popular", getPopularRecipesController);
 
 export default recipesRouter;

@@ -1,4 +1,9 @@
-import { Recipe, RecipeIngredient, Ingredient } from "../db/models/index.js";
+import {
+  Recipe,
+  RecipeIngredient,
+  Ingredient,
+  UserFavorite,
+} from "../db/models/index.js";
 import { Op, Sequelize } from "sequelize";
 
 const getRecipeIdsByIngredient = async (ingredientId) => {
@@ -41,28 +46,16 @@ export const getRecipes = async ({
   if (ingredient) {
     const recipeIds = await getRecipeIdsByIngredient(ingredient);
 
+    if (recipeIds.length === 0) {
+      return { recipes: [], total: 0, page: pageNumber, totalPages: 0 };
+    }
+
     whereClause.id = { [Op.in]: recipeIds };
   }
 
-  const include = [
-    {
-      model: RecipeIngredient,
-      as: "recipeIngredients",
-      attributes: ["measure"],
-      include: [
-        {
-          model: Ingredient,
-          as: "ingredient",
-          attributes: ["id", "name", "img", "description"],
-        },
-      ],
-    },
-  ];
-
   const { rows, count } = await Recipe.findAndCountAll({
     where: whereClause,
-    include,
-    distinct: true,
+    attributes: ["id", "userid", "title", "thumb", "description"],
     limit: pageSize,
     offset,
     order: [["id", "DESC"]],

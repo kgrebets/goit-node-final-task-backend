@@ -1,4 +1,5 @@
 import User from "./User.js";
+import UserFavorite from "./UserFavorites.js";
 import Testimonial from "./Testimonial.js";
 import Recipe from "./Recipe.js";
 import RecipeIngredient from "./RecipeIngredient.js";
@@ -26,4 +27,25 @@ RecipeIngredient.belongsTo(Ingredient, {
   as: "ingredient",
 });
 
-export { User, Testimonial, Recipe, RecipeIngredient, Ingredient };
+Recipe.hasMany(UserFavorite, {
+  foreignKey: "recipeid",
+  sourceKey: "id",
+  as: "favorites",
+});
+
+UserFavorite.belongsTo(Recipe, {
+  foreignKey: "recipeid",
+  targetKey: "id",
+});
+
+User.hasMany(UserFavorite, { foreignKey: "userid", onDelete: "CASCADE" });
+UserFavorite.belongsTo(User, { foreignKey: "userid" });
+
+export {
+  User,
+  Testimonial,
+  Recipe,
+  RecipeIngredient,
+  Ingredient,
+  UserFavorite,
+};

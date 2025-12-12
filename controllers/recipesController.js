@@ -1,5 +1,28 @@
 import * as recipesService from "../services/recipesService.js";
 
+const mapRecipeWithIngredients = (recipe) => {
+  const ingredients =
+    recipe.recipeIngredients?.map((ri) => ({
+      id: ri.ingredient.id,
+      name: ri.ingredient.name,
+      img: ri.ingredient.img,
+      description: ri.ingredient.description,
+      measure: ri.measure,
+    })) ?? [];
+
+  return {
+    id: recipe.id,
+    userid: recipe.userid,
+    title: recipe.title,
+    category: recipe.category,
+    area: recipe.area,
+    time: recipe.time,
+    description: recipe.description,
+    thumb: recipe.thumb,
+    ingredients,
+  };
+};
+
 export const getRecipesController = async (req, res, next) => {
   try {
     const { page, limit, category, area, ingredient } = req.query;
@@ -17,28 +40,11 @@ export const getRecipesController = async (req, res, next) => {
       ingredient,
     });
 
-    const results = recipes.map((recipe) => ({
-      id: recipe.id,
-      title: recipe.title,
-      category: recipe.category,
-      area: recipe.area,
-      time: recipe.time,
-      thumb: recipe.thumb,
-      ingredients:
-        recipe.recipeIngredients?.map((ri) => ({
-          id: ri.ingredient.id,
-          name: ri.ingredient.name,
-          img: ri.ingredient.img,
-          description: ri.ingredient.description,
-          measure: ri.measure,
-        })) ?? [],
-    }));
-
     res.json({
       total,
       page: pageNumber,
       totalPages,
-      results,
+      results: recipes,
     });
   } catch (error) {
     next(error);
@@ -51,28 +57,19 @@ export const getRecipeByIdController = async (req, res, next) => {
 
     const recipe = await recipesService.getRecipeById(id);
 
-    if (!recipe) {
-      return res.status(404).json({ message: "Recipe not found" });
-    }
+    res.json(mapRecipeWithIngredients(recipe));
+  } catch (error) {
+    next(error);
+  }
+};
 
-    const ingredients =
-      recipe.recipeIngredients?.map((ri) => ({
-        id: ri.ingredient.id,
-        name: ri.ingredient.name,
-        img: ri.ingredient.img,
-        description: ri.ingredient.description,
-        measure: ri.measure,
-      })) ?? [];
+export const getPopularRecipesController = async (req, res, next) => {
+  try {
+    const popularRecipes = await recipesService.getPopularRecipes({ limit });
 
     res.json({
-      id: recipe.id,
-      title: recipe.title,
-      category: recipe.category,
-      area: recipe.area,
-      time: recipe.time,
-      description: recipe.description,
-      thumb: recipe.thumb,
-      ingredients,
+      total: popularRecipes.length,
+      results: popularRecipes,
     });
   } catch (error) {
     next(error);
