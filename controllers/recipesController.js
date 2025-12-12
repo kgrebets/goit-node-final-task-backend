@@ -24,51 +24,39 @@ const mapRecipeWithIngredients = (recipe) => {
 };
 
 export const getRecipesController = async (req, res, next) => {
-  try {
-    const { page, limit, category, area, ingredient } = req.query;
+  const { page, limit, category, area, ingredient } = req.query;
 
-    const {
-      recipes,
-      total,
-      page: pageNumber,
-      totalPages,
-    } = await recipesService.getRecipes({
-      page,
-      limit,
-      category,
-      area,
-      ingredient,
-    });
+  const {
+    recipes,
+    total,
+    page: pageNumber,
+    totalPages,
+  } = await recipesService.getRecipes({
+    page,
+    limit,
+    category,
+    area,
+    ingredient,
+  });
 
-    res.json({
-      total,
-      page: pageNumber,
-      totalPages,
-      results: recipes,
-    });
-  } catch (error) {
-    next(error);
-  }
+  res.json({
+    total,
+    page: pageNumber,
+    totalPages,
+    results: recipes,
+  });
 };
 
 export const getRecipeByIdController = async (req, res, next) => {
-  try {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    const recipe = await recipesService.getRecipeById(id);
+  const recipe = await recipesService.getRecipeById(id);
 
-    res.json(mapRecipeWithIngredients(recipe));
-  } catch (error) {
-    next(error);
-  }
+  res.json(mapRecipeWithIngredients(recipe));
 };
 
 export const getPopularRecipesController = async (req, res, next) => {
-  try {
-    const { page, limit } = req.query;
-    const data = await recipesService.getPopularRecipes({ page, limit });
-    res.json(data);
-  } catch (error) {
-    next(error);
-  }
+  const { page, limit } = req.query;
+  const data = await recipesService.getPopularRecipes({ page, limit });
+  res.json(data);
 };
