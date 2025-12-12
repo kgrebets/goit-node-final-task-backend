@@ -14,8 +14,8 @@ const mapRecipeWithIngredients = (recipe) => {
     id: recipe.id,
     userid: recipe.userid,
     title: recipe.title,
-    category: recipe.category,
-    area: recipe.area,
+    categoryid: recipe.categoryid,
+    areaid: recipe.areaid,
     time: recipe.time,
     description: recipe.description,
     thumb: recipe.thumb,
@@ -24,7 +24,7 @@ const mapRecipeWithIngredients = (recipe) => {
 };
 
 export const getRecipesController = async (req, res, next) => {
-  const { page, limit, category, area, ingredient } = req.query;
+  const { page, limit, categoryid, areaid, ingredient } = req.query;
 
   const {
     recipes,
@@ -34,8 +34,8 @@ export const getRecipesController = async (req, res, next) => {
   } = await recipesService.getRecipes({
     page,
     limit,
-    category,
-    area,
+    categoryid,
+    areaid,
     ingredient,
   });
 

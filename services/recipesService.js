@@ -19,8 +19,8 @@ const getRecipeIdsByIngredient = async (ingredientId) => {
 export const getRecipes = async ({
   page,
   limit,
-  category,
-  area,
+  categoryid,
+  areaid,
   ingredient,
 }) => {
   const pageNumber = Number(page) || 1;
@@ -29,17 +29,17 @@ export const getRecipes = async ({
 
   const whereClause = {};
 
-  if (category) {
-    whereClause.category = Sequelize.where(
-      Sequelize.fn("LOWER", Sequelize.col("category")),
-      category.toLowerCase()
+  if (categoryid) {
+    whereClause.categoryid = Sequelize.where(
+      Sequelize.fn("LOWER", Sequelize.col("categoryid")),
+      categoryid.toLowerCase()
     );
   }
 
-  if (area) {
-    whereClause.area = Sequelize.where(
-      Sequelize.fn("LOWER", Sequelize.col("area")),
-      area.toLowerCase()
+  if (areaid) {
+    whereClause.areaid = Sequelize.where(
+      Sequelize.fn("LOWER", Sequelize.col("areaid")),
+      areaid.toLowerCase()
     );
   }
 
@@ -55,7 +55,15 @@ export const getRecipes = async ({
 
   const { rows, count } = await Recipe.findAndCountAll({
     where: whereClause,
-    attributes: ["id", "userid", "title", "thumb", "description"],
+    attributes: [
+      "id",
+      "userid",
+      "title",
+      "thumb",
+      "areaid",
+      "categoryid",
+      "description",
+    ],
     limit: pageSize,
     offset,
     order: [["id", "DESC"]],
