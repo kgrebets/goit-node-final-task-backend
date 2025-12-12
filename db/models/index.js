@@ -3,7 +3,8 @@ import Testimonial from "./Testimonial.js";
 import Recipe from "./Recipe.js";
 import RecipeIngredient from "./RecipeIngredient.js";
 import Ingredient from "./Ingredient.js";
-
+import UserFavoriteRecipe from "./UserFavoriteRecipe.js";
+import { on } from "nodemailer/lib/xoauth2/index.js";
 User.hasMany(Testimonial, { foreignKey: "userid", onDelete: "CASCADE" });
 
 Testimonial.belongsTo(User, {
@@ -26,4 +27,23 @@ RecipeIngredient.belongsTo(Ingredient, {
   as: "ingredient",
 });
 
-export { User, Testimonial, Recipe, RecipeIngredient, Ingredient };
+User.hasMany(UserFavoriteRecipe, {
+  foreignKey: "userId", onDelete: "CASCADE" 
+});
+
+UserFavoriteRecipe.belongsTo(User, {
+  foreignKey: "userId"
+});
+
+Recipe.hasMany(UserFavoriteRecipe, {
+  foreignKey: "recipeId",
+   onDelete: "CASCADE",
+   onUpdate: "CASCADE"
+});
+
+UserFavoriteRecipe.belongsTo(Recipe, {
+  foreignKey: "recipeId"
+});
+
+
+export { User, Testimonial, Recipe, RecipeIngredient, Ingredient, UserFavoriteRecipe };

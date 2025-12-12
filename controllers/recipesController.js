@@ -78,3 +78,53 @@ export const getRecipeByIdController = async (req, res, next) => {
     next(error);
   }
 };
+
+
+
+export const getFavoriteRecipeController = async (req, res, next) => {
+  try {
+    const { recipeId } = req.params;
+
+    const userId = req.user.id;
+
+    const favorite = await recipesService.addRecipeToFavorites(userId, recipeId);
+
+    res.status(201).json({
+      status: "success",
+      message: "Recipe added to favorites",
+      code: 201,
+      data: favorite,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+export const removeFavoriteRecipeController = async (req, res, next) => {
+  try {
+    const { recipeId } = req.params;
+    const userId = req.user.id;
+
+    await recipesService.removeRecipeFromFavorites(userId, recipeId);
+    res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getFavoriteRecipesController = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+
+    const recipes = await recipesService.getUserFavoriteRecipes(userId);
+
+    res.json({
+      status: "success",
+      code: 200,
+      data: recipes,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

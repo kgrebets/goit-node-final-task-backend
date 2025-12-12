@@ -1,4 +1,4 @@
-import { Recipe, RecipeIngredient, Ingredient } from "../db/models/index.js";
+import { Recipe, RecipeIngredient, Ingredient, UserFavoriteRecipe } from "../db/models/index.js";
 import { Op, Sequelize } from "sequelize";
 
 const getRecipeIdsByIngredient = async (ingredientId) => {
@@ -101,4 +101,60 @@ export const getRecipeById = async (id) => {
   }
 
   return recipe;
+};
+
+
+export const addRecipeToFavorites = async (userId, recipeId) => {
+
+  const recipe = await Recipe.findByPk(recipeId);
+
+  if (!recipe) {
+    const error = new Error("Recipe not found");
+    error.status = 404;
+    throw error;
+  }
+
+  const [favorite] = await UserFavoriteRecipe.findOrCreate({
+    where: {userId, recipeId}, 
+    defaults: {userId: userId, recipeId: recipeId},
+    defaults: {userId: userId, recipeId: recipeId},
+
+
+  });
+  return favorite;
+};
+
+
+export const removeRecipeFromFavorites = async (userId, recipeId) => {
+  const deletedCount = await UserFavoriteRecipe.destroy({
+    where: { userId, recipeId },
+  });
+
+  if (!deletedCount) {
+    const error = new Error("Favorite recipe not found");
+    error.status = 404;
+    throw error;
+  }
+};
+
+
+
+export const getUserFavoriteRecipes = async (userId) => {
+  const favorites = await UserFavoriteRecipe.findAll({
+    where: { userId: userId },
+    attributes: ['recipeId'],
+  });
+
+  const recipeIds = favorites.map(fav => fav.recipeId);
+
+  if (!recipeIds.length)  {
+    return [];
+  }
+
+  const recipes = await Recipe.findAll({
+    where: { id: recipeIds},
+  });
+
+  return recipes;
+  
 };
