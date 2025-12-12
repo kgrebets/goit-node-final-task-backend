@@ -138,7 +138,7 @@ userRouter.get("/following", authenticate, getFollowingController);
 
 /**
  * @swagger
- * /api/users/{userId}/follow:
+ * /api/users/{userId}/followers:
  *   post:
  *     summary: Follow a user
  *     tags: [Users]
@@ -161,11 +161,11 @@ userRouter.get("/following", authenticate, getFollowingController);
  *       404:
  *         description: User not found
  */
-userRouter.post("/:userId/follow", authenticate, followUserController);
+userRouter.post("/:userId/followers", authenticate, followUserController);
 
 /**
  * @swagger
- * /api/users/{userId}/follow:
+ * /api/users/{userId}/followers:
  *   delete:
  *     summary: Unfollow a user
  *     tags: [Users]
@@ -188,6 +188,6 @@ userRouter.post("/:userId/follow", authenticate, followUserController);
  *       404:
  *         description: User not found
  */
-userRouter.delete("/:userId/follow", authenticate, unfollowUserController);
+userRouter.delete("/:userId/followers", authenticate, unfollowUserController);
 
 export default userRouter;
