@@ -121,5 +121,14 @@ export const getPopularRecipes = async ({ page, limit }) => {
     raw: true,
   });
 
-  return recipes;
+  const countMap = new Map(
+    popular.map((p) => [p.recipeid, Number(p.favoritesCount)])
+  );
+
+  const recipesWithFavorites = recipes.map((recipe) => ({
+    ...recipe,
+    favoritesCount: countMap.get(recipe.id) || 0,
+  }));
+
+  return recipesWithFavorites;
 };
