@@ -1,5 +1,15 @@
-import Recipe from "../db/models/Recipe.js";
+import { Recipe, RecipeIngredient, Ingredient } from "../db/models/index.js";
 import { Op, Sequelize } from "sequelize";
+
+const getRecipeIdsByIngredient = async (ingredientId) => {
+  const links = await RecipeIngredient.findAll({
+    where: { ingredientid: ingredientId },
+    attributes: ["recipeid"],
+    group: ["recipeid"],
+  });
+
+  return links.map((l) => l.recipeid);
+};
 
 export const getRecipes = async ({
   page,
@@ -10,7 +20,6 @@ export const getRecipes = async ({
 }) => {
   const pageNumber = Number(page) || 1;
   const pageSize = Number(limit) || 12;
-
   const offset = (pageNumber - 1) * pageSize;
 
   const whereClause = {};
@@ -30,16 +39,33 @@ export const getRecipes = async ({
   }
 
   if (ingredient) {
-    whereClause.ingredients = {
-      [Op.contains]: [{ id: ingredient }],
-    };
+    const recipeIds = await getRecipeIdsByIngredient(ingredient);
+
+    whereClause.id = { [Op.in]: recipeIds };
   }
+
+  const include = [
+    {
+      model: RecipeIngredient,
+      as: "recipeIngredients",
+      attributes: ["measure"],
+      include: [
+        {
+          model: Ingredient,
+          as: "ingredient",
+          attributes: ["id", "name", "img", "description"],
+        },
+      ],
+    },
+  ];
 
   const { rows, count } = await Recipe.findAndCountAll({
     where: whereClause,
+    include,
+    distinct: true,
     limit: pageSize,
-    offset: offset,
-    order: [["createdAt", "DESC"]],
+    offset,
+    order: [["id", "DESC"]],
   });
 
   return {
@@ -51,7 +77,22 @@ export const getRecipes = async ({
 };
 
 export const getRecipeById = async (id) => {
-  const recipe = await Recipe.findByPk(id);
+  const recipe = await Recipe.findByPk(id, {
+    include: [
+      {
+        model: RecipeIngredient,
+        as: "recipeIngredients",
+        attributes: ["measure"],
+        include: [
+          {
+            model: Ingredient,
+            as: "ingredient",
+            attributes: ["id", "name", "img", "description"],
+          },
+        ],
+      },
+    ],
+  });
 
   if (!recipe) {
     const error = new Error("Recipe not found");

@@ -1,33 +1,30 @@
 import User from "./User.js";
 import Testimonial from "./Testimonial.js";
 import Recipe from "./Recipe.js";
-// import Favorite from "./Favorite.js";
+import RecipeIngredient from "./RecipeIngredient.js";
+import Ingredient from "./Ingredient.js";
 
-User.hasMany(Testimonial, { foreignKey: "userId", onDelete: "CASCADE" });
+User.hasMany(Testimonial, { foreignKey: "userid", onDelete: "CASCADE" });
 
 Testimonial.belongsTo(User, {
-  foreignKey: "userId",
+  foreignKey: "userid",
   onDelete: "CASCADE",
   onUpdate: "CASCADE",
 });
 
-Recipe.belongsTo(User, { foreignKey: "owner", as: "Creator" });
-User.hasMany(Recipe, { foreignKey: "owner", as: "Recipes" });
+Recipe.belongsTo(User, { foreignKey: "userid", as: "Creator" });
+User.hasMany(Recipe, { foreignKey: "userid", as: "Recipes" });
 
-User.belongsToMany(Recipe, {
-  through: Favorite,
-  foreignKey: "userId",
-  otherKey: "recipeId",
-  as: "FavoriteRecipes",
+Recipe.hasMany(RecipeIngredient, {
+  foreignKey: "recipeid",
+  sourceKey: "id",
+  as: "recipeIngredients",
 });
 
-Recipe.belongsToMany(User, {
-  through: Favorite,
-  foreignKey: "recipeId",
-  otherKey: "userId",
-  as: "FavoritedBy",
+RecipeIngredient.belongsTo(Ingredient, {
+  foreignKey: "ingredientid",
+  targetKey: "id",
+  as: "ingredient",
 });
 
-export { User, Testimonial, Recipe, 
-  // Favorite 
- };
+export { User, Testimonial, Recipe, RecipeIngredient, Ingredient };
