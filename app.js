@@ -15,11 +15,11 @@ import recipesRouter from "./routes/recipesRouter.js";
 import swaggerDocs from "./swagger/swagger.js";
 import userRouter from "./routes/userRouter.js";
 
-//import User from "./db/models/User.js";
-//User.sync({ alter: true });
+// import User from "./db/models/User.js";
+// User.sync({ alter: true });
 
-//import UserFollow from "./db/models/UserFollow.js";
-//UserFollow.sync({ alter: true });
+// import UserFollow from "./db/models/UserFollow.js";
+// UserFollow.sync({ alter: true });
 
 // import Testimonial from "./db/models/Testimonial.js";
 // Testimonial.sync({ alter: true });
@@ -29,7 +29,10 @@ import userRouter from "./routes/userRouter.js";
 
 const app = express();
 
-app.use(morgan("tiny"));
+if (process.env.NODE_ENV !== "test") {
+  app.use(morgan("tiny"));
+}
+
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
@@ -41,15 +44,8 @@ app.use("/api/areas", areaRouter);
 app.use("/api/testimonials", testimonialRouter);
 app.use("/api/recipes", recipesRouter);
 app.use("/api/users", userRouter);
-app.use(notFoundHander);
 
 app.use(notFoundHander);
 app.use(errorHandler);
 
-await connectDatabase();
-
-const port = Number(process.env.PORT) || 3000;
-
-app.listen(port, () => {
-  console.log(`Server is running. Use our API on port: ${port}`);
-});
+export default app;

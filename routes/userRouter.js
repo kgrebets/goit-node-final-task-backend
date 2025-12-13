@@ -6,6 +6,8 @@ import {
   getFollowingController,
   followUserController,
   unfollowUserController,
+  getUserInfoByIdController,
+  getCurrentUserController,
 } from "../controllers/usersController.js";
 
 const userRouter = Router();
@@ -14,8 +16,55 @@ const userRouter = Router();
  * @swagger
  * tags:
  *   name: Users
- *   description: User follow relationships
+ *   description: User management and follow relationships
  */
+
+/**
+ * @swagger
+ * /api/users/me:
+ *   get:
+ *     summary: Get current user information
+ *     description: Returns the authenticated user's profile information including avatar, name, email, and various counts (recipes, favorites, followers, following)
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Current user information
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   description: User's unique identifier
+ *                 name:
+ *                   type: string
+ *                   description: User's display name
+ *                 email:
+ *                   type: string
+ *                   description: User's email address
+ *                 avatar:
+ *                   type: string
+ *                   nullable: true
+ *                   description: URL to user's avatar image
+ *                 recipesCount:
+ *                   type: integer
+ *                   description: Number of recipes created by the user
+ *                 favoritesCount:
+ *                   type: integer
+ *                   description: Number of recipes marked as favorite
+ *                 followersCount:
+ *                   type: integer
+ *                   description: Number of users following this user
+ *                 followingCount:
+ *                   type: integer
+ *                   description: Number of users this user is following
+ *       401:
+ *         description: Unauthorized - Authentication required
+ */
+userRouter.get("/me", authenticate, getCurrentUserController);
 
 /**
  * @swagger
@@ -90,7 +139,7 @@ userRouter.get("/following", authenticate, getFollowingController);
 
 /**
  * @swagger
- * /api/users/{userId}/follow:
+ * /api/users/{userId}/followers:
  *   post:
  *     summary: Follow a user
  *     tags: [Users]
@@ -113,11 +162,11 @@ userRouter.get("/following", authenticate, getFollowingController);
  *       404:
  *         description: User not found
  */
-userRouter.post("/:userId/follow", authenticate, followUserController);
+userRouter.post("/:userId/followers", authenticate, followUserController);
 
 /**
  * @swagger
- * /api/users/{userId}/follow:
+ * /api/users/{userId}/followers:
  *   delete:
  *     summary: Unfollow a user
  *     tags: [Users]
@@ -140,6 +189,47 @@ userRouter.post("/:userId/follow", authenticate, followUserController);
  *       404:
  *         description: User not found
  */
-userRouter.delete("/:userId/follow", authenticate, unfollowUserController);
+userRouter.delete("/:userId/followers", authenticate, unfollowUserController);
+
+
+/**
+ * @swagger
+ * /api/users/{userId}:
+ *   get:
+ *     summary: Get detailed info about another user
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the user
+ *     responses:
+ *       200:
+ *         description: User detailed info
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 avatar:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                 recipesCount:
+ *                   type: integer
+ *                 followersCount:
+ *                   type: integer
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: User not found
+ */
+userRouter.get("/:userId", authenticate, getUserInfoByIdController);
 
 export default userRouter;

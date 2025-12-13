@@ -40,7 +40,7 @@ const Recipe = sequelize.define(
       allowNull: true,
     },
     areaid: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: true,
       references: {
         model: "areas",
