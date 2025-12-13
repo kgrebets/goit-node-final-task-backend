@@ -12,6 +12,7 @@ import authRouter from "./routes/authRouter.js";
 import areaRouter from "./routes/areaRouter.js";
 import testimonialRouter from "./routes/testimonialRouter.js";
 import recipesRouter from "./routes/recipesRouter.js";
+import ingredientsRouter from "./routes/ingredientsRouter.js";
 import swaggerDocs from "./swagger/swagger.js";
 import userRouter from "./routes/userRouter.js";
 
@@ -43,6 +44,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/areas", areaRouter);
 app.use("/api/testimonials", testimonialRouter);
 app.use("/api/recipes", recipesRouter);
+app.use("/api/ingredients", ingredientsRouter);
 app.use("/api/users", userRouter);
 
 app.use(notFoundHander);
