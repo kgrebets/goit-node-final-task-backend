@@ -6,6 +6,7 @@ import {
   getFollowingController,
   followUserController,
   unfollowUserController,
+  getUserInfoByIdController,
   getCurrentUserController,
 } from "../controllers/usersController.js";
 
@@ -189,5 +190,46 @@ userRouter.post("/:userId/follow", authenticate, followUserController);
  *         description: User not found
  */
 userRouter.delete("/:userId/follow", authenticate, unfollowUserController);
+
+
+/**
+ * @swagger
+ * /api/users/{userId}:
+ *   get:
+ *     summary: Get detailed info about another user
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the user
+ *     responses:
+ *       200:
+ *         description: User detailed info
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 avatar:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                 recipesCount:
+ *                   type: integer
+ *                 followersCount:
+ *                   type: integer
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: User not found
+ */
+userRouter.get("/:userId", authenticate, getUserInfoByIdController);
 
 export default userRouter;
