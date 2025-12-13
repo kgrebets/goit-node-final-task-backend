@@ -10,7 +10,7 @@ User.hasMany(Testimonial, { foreignKey: "userid", onDelete: "CASCADE" });
 User.hasMany(Recipe, {
   foreignKey: "userid",
   sourceKey: "id",
-  as: "recipes",
+  as: "Recipes",
   onDelete: "CASCADE",
   onUpdate: "CASCADE",
 });
@@ -24,7 +24,7 @@ Testimonial.belongsTo(User, {
 Recipe.belongsTo(User, {
   foreignKey: "userid",
   targetKey: "id",
-  as: "creator",
+  as: "Creator",
   onDelete: "CASCADE",
   onUpdate: "CASCADE",
 });
