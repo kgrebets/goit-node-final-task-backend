@@ -1,28 +1,5 @@
 import * as recipesService from "../services/recipesService.js";
 
-const mapRecipeWithIngredients = (recipe) => {
-  const ingredients =
-    recipe.recipeIngredients?.map((ri) => ({
-      id: ri.ingredient.id,
-      name: ri.ingredient.name,
-      img: ri.ingredient.img,
-      description: ri.ingredient.description,
-      measure: ri.measure,
-    })) ?? [];
-
-  return {
-    id: recipe.id,
-    userid: recipe.userid,
-    title: recipe.title,
-    categoryid: recipe.categoryid,
-    areaid: recipe.areaid,
-    time: recipe.time,
-    description: recipe.description,
-    thumb: recipe.thumb,
-    ingredients,
-  };
-};
-
 export const getRecipesController = async (req, res, next) => {
   const { page, limit, categoryid, areaid, ingredient } = req.query;
 
@@ -52,7 +29,7 @@ export const getRecipeByIdController = async (req, res, next) => {
 
   const recipe = await recipesService.getRecipeById(id);
 
-  res.json(mapRecipeWithIngredients(recipe));
+  res.json(recipe);
 };
 
 export const getPopularRecipesController = async (req, res, next) => {

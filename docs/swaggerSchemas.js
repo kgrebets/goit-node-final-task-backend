@@ -24,7 +24,7 @@
  *           type: integer
  *           example: 1
  *
- *     IngredientInRecipe:
+ *     Ingredient:
  *       type: object
  *       properties:
  *         id:
@@ -39,41 +39,56 @@
  *         description:
  *           type: string
  *           example: "Small, round balls of mozzarella cheese..."
+ *
+ *     RecipeIngredientItem:
+ *       type: object
+ *       properties:
  *         measure:
  *           type: string
  *           example: "200 g"
+ *         ingredient:
+ *           $ref: '#/components/schemas/Ingredient'
  *
  *     Recipe:
  *       type: object
  *       properties:
  *         id:
  *           type: string
- *           example: "6462a8f74c3d0ddd28897fb8"
- *         userid:
- *           type: string
- *           example: "n-QaIbsY-Gk9Ggee4eGQ-"
+ *           example: "6462a8f74c3d0ddd28898049"
  *         title:
  *           type: string
- *           example: "Mediterranean Pasta Salad"
+ *           example: "Stamppot"
+ *         category:
+ *           type: string
+ *           example: "Pork"
  *         categoryid:
  *           type: string
- *           example: "6462a6cd4c3d0ddd28897f8a"
+ *           example: "6462a6cd4c3d0ddd28897f91"
+ *         userid:
+ *           type: string
+ *           example: "64c8d958249fae54bae90bb8"
+ *         area:
+ *           type: string
+ *           example: "Dutch"
  *         areaid:
  *           type: string
- *           example: "6462a6f04c3d0ddd28897f9c"
- *         time:
- *           type: integer
- *           example: 27
+ *           example: "6462a6f04c3d0ddd28897fa8"
+ *         instructions:
+ *           type: string
+ *           example: "Wash and peel the potatoes..."
  *         description:
  *           type: string
- *           example: "A salad made with pasta, vegetables..."
+ *           example: "A traditional Dutch dish made with mashed potatoes..."
  *         thumb:
  *           type: string
- *           example: "https://ftp.goit.study/img/so-yummy/preview/Mediterranean%20Pasta%20Salad.jpg"
- *         ingredients:
+ *           example: "https://ftp.goit.study/img/so-yummy/preview/Stamppot.jpg"
+ *         time:
+ *           type: integer
+ *           example: 40
+ *         recipeIngredients:
  *           type: array
  *           items:
- *             $ref: '#/components/schemas/IngredientInRecipe'
+ *             $ref: '#/components/schemas/RecipeIngredientItem'
  *
  *     RecipePreview:
  *       type: object
@@ -90,9 +105,15 @@
  *         thumb:
  *           type: string
  *           example: "https://ftp.goit.study/img/so-yummy/preview/Oatmeal%20Cookies%20With%20Peanuts.jpg"
+ *         area:
+ *           type: string
+ *           example: "Ukrainian"
  *         areaid:
  *           type: string
  *           example: "6462a6f04c3d0ddd28897f9b"
+ *         category:
+ *           type: string
+ *           example: "Dessert"
  *         categoryid:
  *           type: string
  *           example: "6462a6cd4c3d0ddd28897f8f"
