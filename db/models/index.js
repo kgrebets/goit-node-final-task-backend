@@ -7,13 +7,27 @@ import Ingredient from "./Ingredient.js";
 
 User.hasMany(Testimonial, { foreignKey: "userid", onDelete: "CASCADE" });
 
+User.hasMany(Recipe, {
+  foreignKey: "userid",
+  sourceKey: "id",
+  as: "recipes",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
+
 Testimonial.belongsTo(User, {
   foreignKey: "userid",
   onDelete: "CASCADE",
   onUpdate: "CASCADE",
 });
 
-Recipe.belongsTo(User, { foreignKey: "userid" });
+Recipe.belongsTo(User, {
+  foreignKey: "userid",
+  targetKey: "id",
+  as: "user",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
 
 Recipe.hasMany(RecipeIngredient, {
   foreignKey: "recipeid",
@@ -27,19 +41,42 @@ RecipeIngredient.belongsTo(Ingredient, {
   as: "ingredient",
 });
 
+RecipeIngredient.belongsTo(Recipe, {
+  foreignKey: "recipeid",
+  targetKey: "id",
+});
+
 Recipe.hasMany(UserFavorite, {
   foreignKey: "recipeid",
   sourceKey: "id",
   as: "favorites",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
 });
 
 UserFavorite.belongsTo(Recipe, {
   foreignKey: "recipeid",
   targetKey: "id",
+  as: "recipe",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
 });
 
-User.hasMany(UserFavorite, { foreignKey: "userid", onDelete: "CASCADE" });
-UserFavorite.belongsTo(User, { foreignKey: "userid" });
+User.hasMany(UserFavorite, {
+  foreignKey: "userid",
+  sourceKey: "id",
+  as: "favorites",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
+
+UserFavorite.belongsTo(User, {
+  foreignKey: "userid",
+  targetKey: "id",
+  as: "user",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
 
 export {
   User,
