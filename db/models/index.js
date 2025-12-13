@@ -24,7 +24,7 @@ Testimonial.belongsTo(User, {
 Recipe.belongsTo(User, {
   foreignKey: "userid",
   targetKey: "id",
-  as: "user",
+  as: "creator",
   onDelete: "CASCADE",
   onUpdate: "CASCADE",
 });
