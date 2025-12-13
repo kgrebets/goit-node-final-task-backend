@@ -8,12 +8,14 @@ import {
   getRecipeByIdController,
   createRecipeController,
   deleteRecipeController,
+  getPopularRecipesController,
 } from "../controllers/recipesController.js";
 import {
   getRecipesSchema,
   getRecipeByIdSchema,
   createRecipeSchema,
   deleteRecipeSchema,
+  getPopularRecipesSchema,
 } from "../schemas/recipesSchemas.js";
 
 const recipesRouter = Router();
@@ -41,7 +43,7 @@ const recipesRouter = Router();
  *         name: limit
  *         schema:
  *           type: integer
- *           example: 10
+ *           example: 12
  *       - in: query
  *         name: category
  *         schema:
@@ -59,33 +61,54 @@ const recipesRouter = Router();
  *           example: Tomato
  *     responses:
  *       200:
- *         description: List of recipes
+ *         description: Paginated list of recipes
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 total:
- *                   type: integer
- *                   example: 120
- *                 page:
- *                   type: integer
- *                   example: 1
- *                 totalPages:
- *                   type: integer
- *                   example: 12
- *                 results:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/RecipePreview'
+ *               $ref: '#/components/schemas/RecipesListResponse'
  */
+
 recipesRouter.get("/", validateQuery(getRecipesSchema), getRecipesController);
+
+/**
+ * @swagger
+ * /api/recipes/popular:
+ *   get:
+ *     summary: Get popular recipes
+ *     tags: [Recipes]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           example: 4
+ *     responses:
+ *       200:
+ *         description: List of popular recipes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/PopularRecipe'
+ */
+
+recipesRouter.get(
+  "/popular",
+  validateQuery(getPopularRecipesSchema),
+  getPopularRecipesController
+);
 
 /**
  * @swagger
  * /api/recipes/{id}:
  *   get:
- *     summary: Get recipe by id
+ *     summary: Get recipe by ID
  *     tags: [Recipes]
  *     parameters:
  *       - in: path
@@ -93,14 +116,14 @@ recipesRouter.get("/", validateQuery(getRecipesSchema), getRecipesController);
  *         required: true
  *         schema:
  *           type: string
- *           example: 64c8d958249fae54bae90bb7
+ *           example: "6462a8f74c3d0ddd28897fb8"
  *     responses:
  *       200:
  *         description: Recipe details
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/RecipeDetails'
+ *               $ref: '#/components/schemas/Recipe'
  *       404:
  *         description: Recipe not found
  */

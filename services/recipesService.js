@@ -1,4 +1,9 @@
-import { Recipe, RecipeIngredient, Ingredient } from "../db/models/index.js";
+import {
+  Recipe,
+  RecipeIngredient,
+  Ingredient,
+  UserFavorite,
+} from "../db/models/index.js";
 import { Op, Sequelize } from "sequelize";
 import Area from "../db/models/Area.js";
 import HttpError from "../helpers/HttpError.js";
@@ -55,7 +60,16 @@ export const getRecipes = async ({
         {
           model: Ingredient,
           as: "ingredient",
-          attributes: ["id", "name", "img", "description"],
+          attributes: [
+            "id",
+            "userid",
+            "title",
+            "thumb",
+            "area",
+            "areaid",
+            "category",
+            "categoryid",
+            "description",],
         },
       ],
     },
@@ -103,6 +117,43 @@ export const getRecipeById = async (id) => {
   }
 
   return recipe;
+};
+
+export const getPopularRecipes = async ({ page, limit }) => {
+  page = Number(page) || 1;
+  limit = Number(limit) || 4;
+  const offset = (page - 1) * limit;
+
+  const popular = await UserFavorite.findAll({
+    attributes: [
+      "recipeid",
+      [Sequelize.fn("COUNT", Sequelize.col("recipeid")), "favoritesCount"],
+    ],
+    group: ["recipeid"],
+    order: [[Sequelize.fn("COUNT", Sequelize.col("recipeid")), "DESC"]],
+    limit: limit,
+    offset,
+    raw: true,
+  });
+
+  const recipeIds = popular.map((p) => p.recipeid);
+
+  const recipes = await Recipe.findAll({
+    where: { id: { [Op.in]: recipeIds } },
+    attributes: ["id", "userid", "title", "thumb", "description"],
+    raw: true,
+  });
+
+  const countMap = new Map(
+    popular.map((p) => [p.recipeid, Number(p.favoritesCount)])
+  );
+
+  const recipesWithFavorites = recipes.map((recipe) => ({
+    ...recipe,
+    favoritesCount: countMap.get(recipe.id) || 0,
+  }));
+
+  return recipesWithFavorites;
 };
 
 export const createRecipe = async (recipeData, userId) => {

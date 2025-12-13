@@ -55,6 +55,25 @@ const unfollowUser = async (followerId, followingId) => {
   return true;
 };
 
+const getUserInfo = async (userId) => {
+  const user = await User.findByPk(userId, {
+    attributes: ["id", "username", "email", "avatar"]
+  });
+  if (!user) return null;
+
+  const recipesCount = await Recipe.count({ where: { userid: userId } });
+  const followersCount = await UserFollow.count({ where: { followingId: userId } });
+
+    return {
+    avatar: user.avatar,
+    name: user.username,
+    email: user.email,
+    recipesCount,
+    followersCount
+  };
+}; 
+
+
 const getCurrentUserInfo = async (userId, user) => {
   const recipesCount = await Recipe.count({
     where: { userid: userId },
@@ -92,5 +111,6 @@ export default {
   getFollowing,
   followUser,
   unfollowUser,
+  getUserInfo,
   getCurrentUserInfo,
 };

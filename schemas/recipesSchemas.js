@@ -12,6 +12,11 @@ export const getRecipeByIdSchema = Joi.object({
   id: Joi.string().required(),
 });
 
+export const getPopularRecipesSchema = Joi.object({
+  page: Joi.number().integer().min(1).default(1),
+  limit: Joi.number().integer().min(1).default(4),
+});
+
 export const createRecipeSchema = Joi.object({
   title: Joi.string().required(),
   category: Joi.string().required(),
