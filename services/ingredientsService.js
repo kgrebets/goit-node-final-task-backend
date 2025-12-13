@@ -1,5 +1,5 @@
 import { Ingredient } from "../db/models/index.js";
-import { Sequelize } from "sequelize";
+import { Op, Sequelize } from "sequelize";
 
 export const getAllIngredients = async ({ page, limit, name }) => {
   const pageNumber = Number(page) || 1;
@@ -11,7 +11,7 @@ export const getAllIngredients = async ({ page, limit, name }) => {
   if (name) {
     whereClause.name = Sequelize.where(
       Sequelize.fn("LOWER", Sequelize.col("name")),
-      "LIKE",
+      Op.like,
       `%${name.toLowerCase()}%`
     );
   }

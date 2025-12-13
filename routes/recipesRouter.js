@@ -45,20 +45,20 @@ const recipesRouter = Router();
  *           type: integer
  *           example: 12
  *       - in: query
- *         name: category
+ *         name: categoryid
  *         schema:
  *           type: string
- *           example: Beef
+ *           example: "6462a6cd4c3d0ddd28897f8f"
  *       - in: query
- *         name: area
+ *         name: areaid
  *         schema:
  *           type: string
- *           example: Italian
+ *           example: "6462a6f04c3d0ddd28897f9b"
  *       - in: query
  *         name: ingredient
  *         schema:
  *           type: string
- *           example: Tomato
+ *           example: "640c2dd963a319ea671e3724"
  *     responses:
  *       200:
  *         description: Paginated list of recipes

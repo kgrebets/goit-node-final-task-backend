@@ -21,8 +21,8 @@ const getRecipeIdsByIngredient = async (ingredientId) => {
 export const getRecipes = async ({
   page,
   limit,
-  category,
-  area,
+  categoryid,
+  areaid,
   ingredient,
 }) => {
   const pageNumber = Number(page) || 1;
@@ -30,55 +30,44 @@ export const getRecipes = async ({
   const offset = (pageNumber - 1) * pageSize;
 
   const whereClause = {};
-
-  if (category) {
-    whereClause.category = Sequelize.where(
-      Sequelize.fn("LOWER", Sequelize.col("category")),
-      category.toLowerCase()
+  
+  if (categoryid) {
+    whereClause.categoryid = Sequelize.where(
+      Sequelize.fn("LOWER", Sequelize.col("categoryid")),
+      categoryid.toLowerCase()
     );
   }
-
-  if (area) {
-    whereClause.area = Sequelize.where(
-      Sequelize.fn("LOWER", Sequelize.col("area")),
-      area.toLowerCase()
+  
+  if (areaid) {
+    whereClause.areaid = Sequelize.where(
+      Sequelize.fn("LOWER", Sequelize.col("areaid")),
+      areaid.toLowerCase()
     );
   }
 
   if (ingredient) {
     const recipeIds = await getRecipeIdsByIngredient(ingredient);
 
+    if (recipeIds.length === 0) {
+      return { recipes: [], total: 0, page: pageNumber, totalPages: 0 };
+    }
+    
     whereClause.id = { [Op.in]: recipeIds };
   }
-
-  const include = [
-    {
-      model: RecipeIngredient,
-      as: "recipeIngredients",
-      attributes: ["measure"],
-      include: [
-        {
-          model: Ingredient,
-          as: "ingredient",
-          attributes: [
-            "id",
-            "userid",
-            "title",
-            "thumb",
-            "area",
-            "areaid",
-            "category",
-            "categoryid",
-            "description",],
-        },
-      ],
-    },
-  ];
-
+  
   const { rows, count } = await Recipe.findAndCountAll({
     where: whereClause,
-    include,
-    distinct: true,
+    attributes: [
+      "id",
+      "userid",
+      "title",
+      "thumb",
+      "area",
+      "areaid",
+      "category",
+      "categoryid",
+      "description",
+    ],
     limit: pageSize,
     offset,
     order: [["id", "DESC"]],
