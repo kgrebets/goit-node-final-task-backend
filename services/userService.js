@@ -2,6 +2,7 @@ import User from "../db/models/User.js";
 import Recipe from "../db/models/Recipe.js";
 import UserFollow from "../db/models/UserFollow.js";
 import HttpError from "../helpers/HttpError.js";
+import UserFavorite from "../db/models/UserFavorites.js";
 
 const getUserById = async (id) => {
   const user = await User.findByPk(id);
@@ -79,12 +80,9 @@ const getCurrentUserInfo = async (userId, user) => {
     where: { userid: userId },
   });
 
-  // TODO: Implement favorites functionality
-  // const favoritesCount = await Favorite.count({
-  //   where: { userId },
-  // });
-  // Stub: returns -1 to indicate not implemented
-  const favoritesCount = -1;
+  const favoritesCount = await UserFavorite.count({
+    where: { userid: userId },
+  });
 
   const followersCount = await UserFollow.count({
     where: { followingId: userId },
