@@ -71,6 +71,7 @@ export const loginUser = async ({ email, password }) => {
     user: {
       username: user.username,
       email: user.email,
+      avatar: user.avatar,
     },
   };
 };
@@ -85,6 +86,7 @@ export const refreshUser = async (user) => {
     user: {
       username: user.username,
       email: user.email,
+      avatar: user.avatar,
     },
   };
 };
