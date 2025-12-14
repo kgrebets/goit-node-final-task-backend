@@ -120,6 +120,9 @@ authRouter.post("/register", validateBody(registerSchema), registerController);
  *                       type: string
  *                     email:
  *                       type: string
+ *                     avatar:
+ *                       type: string
+ *                       nullable: true
  *       400:
  *         description: Validation error
  *       401:
@@ -152,6 +155,9 @@ authRouter.post("/login", validateBody(loginSchema), loginController);
  *                       type: string
  *                     email:
  *                       type: string
+ *                     avatar:
+ *                       type: string
+ *                       nullable: true
  *       401:
  *         description: Unauthorized or invalid token
  */
