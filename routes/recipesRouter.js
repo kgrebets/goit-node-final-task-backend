@@ -48,7 +48,7 @@ const recipesRouter = Router();
  *         name: categoryid
  *         schema:
  *           type: string
- *           example: "6462a6cd4c3d0ddd28897f8f"
+ *           example: "6462a6cd4c3d0ddd28897f8d"
  *       - in: query
  *         name: areaid
  *         schema:
@@ -58,14 +58,10 @@ const recipesRouter = Router();
  *         name: ingredient
  *         schema:
  *           type: string
- *           example: "640c2dd963a319ea671e3724"
+ *           example: "640c2dd963a319ea671e367e"
  *     responses:
  *       200:
  *         description: Paginated list of recipes
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/RecipesListResponse'
  */
 
 recipesRouter.get("/", validateQuery(getRecipesSchema), getRecipesController);
@@ -90,12 +86,6 @@ recipesRouter.get("/", validateQuery(getRecipesSchema), getRecipesController);
  *     responses:
  *       200:
  *         description: List of popular recipes
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/PopularRecipe'
  */
 
 recipesRouter.get(
@@ -116,17 +106,13 @@ recipesRouter.get(
  *         required: true
  *         schema:
  *           type: string
- *           example: "6462a8f74c3d0ddd28897fb8"
  *     responses:
  *       200:
  *         description: Recipe details
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Recipe'
  *       404:
  *         description: Recipe not found
  */
+
 recipesRouter.get(
   "/:id",
   validateParams(getRecipeByIdSchema),
@@ -149,51 +135,95 @@ recipesRouter.get(
  *             type: object
  *             required:
  *               - title
- *               - category
+ *               - categoryid
  *               - instructions
  *               - time
  *               - ingredients
  *             properties:
  *               title:
  *                 type: string
- *                 example: "Battenberg Cake"
- *               category:
+ *                 example: "My sweet recipe"
+ *               categoryid:
  *                 type: string
- *                 example: "Dessert"
- *               area:
+ *                 example: "6462a6cd4c3d0ddd28897f8d"
+ *               areaid:
  *                 type: string
- *                 example: "British"
+ *                 example: "6462a6f04c3d0ddd28897f9b"
  *               instructions:
  *                 type: string
- *                 example: "Heat oven to 180C..."
+ *                 example: "Mix everything and cook"
  *               description:
  *                 type: string
- *                 example: "A classic British cake..."
+ *                 example: "YOu won't believe how sweet this is!"
  *               thumb:
  *                 type: string
- *                 example: "https://ftp.goit.study/img/so-yummy/preview/Battenberg%20Cake.jpg"
+ *                 example: "https://ftp.goit.study/img/so-yummy/preview/Saltfish%20and%20Ackee.jpg"
  *               time:
- *                 type: string
- *                 example: "60"
+ *                 type: integer
+ *                 example: 45
  *               ingredients:
  *                 type: array
  *                 items:
  *                   type: object
+ *                   required:
+ *                     - id
  *                   properties:
  *                     id:
  *                       type: string
  *                       example: "640c2dd963a319ea671e367e"
  *                     measure:
  *                       type: string
- *                       example: "175g"
+ *                       example: "333 g"
  *     responses:
  *       201:
  *         description: Recipe created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 title:
+ *                   type: string
+ *                 categoryid:
+ *                   type: string
+ *                 userid:
+ *                   type: string
+ *                 areaid:
+ *                   type: string
+ *                 instructions:
+ *                   type: string
+ *                 description:
+ *                   type: string
+ *                 thumb:
+ *                   type: string
+ *                 time:
+ *                   type: integer
+ *                 recipeIngredients:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       measure:
+ *                         type: string
+ *                       ingredient:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: string
+ *                           name:
+ *                             type: string
+ *                           img:
+ *                             type: string
+ *                           description:
+ *                             type: string
  *       400:
  *         description: Validation error
  *       401:
  *         description: Unauthorized
  */
+
 recipesRouter.post(
   "/",
   authenticate,
@@ -215,7 +245,6 @@ recipesRouter.post(
  *         required: true
  *         schema:
  *           type: string
- *         example: "1"
  *     responses:
  *       200:
  *         description: Recipe deleted successfully
@@ -226,6 +255,7 @@ recipesRouter.post(
  *       401:
  *         description: Unauthorized
  */
+
 recipesRouter.delete(
   "/:id",
   authenticate,
