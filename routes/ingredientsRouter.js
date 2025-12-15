@@ -76,4 +76,3 @@ ingredientsRouter.get(
 );
 
 export default ingredientsRouter;
-

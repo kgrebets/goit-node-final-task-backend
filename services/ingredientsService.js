@@ -23,18 +23,11 @@ export const getAllIngredients = async ({ page, limit, name }) => {
     offset,
   });
 
-  const results = rows.map((ingredient) => ({
-    _id: ingredient.id,
-    name: ingredient.name,
-    desc: ingredient.description || "",
-    img: ingredient.img || "",
-  }));
-
   return {
     total: count,
     page: pageNumber,
     totalPages: Math.ceil(count / pageSize),
-    results,
+    results: rows,
   };
 };
 
