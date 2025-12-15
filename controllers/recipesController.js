@@ -1,6 +1,7 @@
+import HttpError from "../helpers/HttpError.js";
 import * as recipesService from "../services/recipesService.js";
 
-export const getRecipesController = async (req, res, next) => {
+export const getRecipesController = async (req, res) => {
   const { page, limit, categoryid, areaid, ingredient } = req.query;
 
   const {
@@ -24,11 +25,14 @@ export const getRecipesController = async (req, res, next) => {
   });
 };
 
-export const getRecipeByIdController = async (req, res, next) => {
+export const getRecipeByIdController = async (req, res) => {
   const { id } = req.params;
 
   const recipe = await recipesService.getRecipeById(id);
 
+  if (!recipe) {
+    throw HttpError(404, "Recipe not found");
+  }
   res.json(recipe);
 };
 
@@ -38,51 +42,30 @@ export const getPopularRecipesController = async (req, res, next) => {
   res.json(data);
 };
 
-export const createRecipeController = async (req, res, next) => {
-  try {
-    const recipeData = req.body;
-    const userId = req.user.id;
+export const createRecipeController = async (req, res) => {
+  const recipeData = req.body;
+  const userId = req.user.id;
 
-    const recipe = await recipesService.createRecipe(recipeData, userId);
+  const recipe = await recipesService.createRecipe(recipeData, userId);
 
-    const ingredients =
-      recipe.recipeIngredients?.map((ri) => ({
-        id: ri.ingredient.id,
-        name: ri.ingredient.name,
-        img: ri.ingredient.img,
-        description: ri.ingredient.description,
-        measure: ri.measure,
-      })) ?? [];
-
-    res.status(201).json({
-      _id: { $oid: String(recipe.id) },
-      title: recipe.title,
-      category: recipe.category,
-      owner: { $oid: recipe.userid },
-      area: recipe.area,
-      instructions: recipe.instructions,
-      description: recipe.description,
-      thumb: recipe.thumb,
-      time: String(recipe.time),
-      ingredients: ingredients.map((ing) => ({
-        id: ing.id,
-        measure: ing.measure,
-      })),
-    });
-  } catch (error) {
-    next(error);
-  }
+  res.status(201).json(recipe);
 };
 
-export const deleteRecipeController = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const userId = req.user.id;
+export const deleteRecipeController = async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.id;
 
-    await recipesService.deleteRecipe(id, userId);
+  const recipe = await recipesService.getRecipeById(id);
 
-    res.status(200).json({ message: "Recipe deleted successfully" });
-  } catch (error) {
-    next(error);
+  if (!recipe) throw HttpError(404, "Recipe not found");
+
+  if (recipe.userid !== userId) {
+    return res
+      .status(403)
+      .json({ message: "Forbidden: You cannot delete this recipe." });
   }
+
+  await recipesService.deleteRecipe(id, userId);
+
+  res.status(200).json({ message: "Recipe deleted successfully" });
 };

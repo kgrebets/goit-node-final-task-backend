@@ -21,6 +21,11 @@ Testimonial.belongsTo(User, {
   onUpdate: "CASCADE",
 });
 
+Ingredient.hasMany(RecipeIngredient, {
+  foreignKey: "ingredientid",
+  sourceKey: "id",
+});
+
 Recipe.belongsTo(User, {
   foreignKey: "userid",
   targetKey: "id",
@@ -33,6 +38,8 @@ Recipe.hasMany(RecipeIngredient, {
   foreignKey: "recipeid",
   sourceKey: "id",
   as: "recipeIngredients",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
 });
 
 RecipeIngredient.belongsTo(Ingredient, {

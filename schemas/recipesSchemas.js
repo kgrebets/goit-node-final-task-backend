@@ -19,13 +19,14 @@ export const getPopularRecipesSchema = Joi.object({
 
 export const createRecipeSchema = Joi.object({
   title: Joi.string().required(),
-  category: Joi.string().required(),
-  area: Joi.string().optional().allow(null, ""),
+  categoryid: Joi.string().required(),
+  areaid: Joi.string().optional().allow(null, ""),
   instructions: Joi.string().required(),
   description: Joi.string().optional().allow(null, ""),
   thumb: Joi.string().uri().optional().allow(null, ""),
   time: Joi.alternatives().try(Joi.string(), Joi.number()).required(),
   ingredients: Joi.array()
+    .min(1)
     .items(
       Joi.object({
         id: Joi.string().required(),

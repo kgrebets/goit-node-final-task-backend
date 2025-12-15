@@ -4,9 +4,9 @@ import {
   Ingredient,
   UserFavorite,
 } from "../db/models/index.js";
-import { Op, Sequelize } from "sequelize";
-import Area from "../db/models/Area.js";
-import HttpError from "../helpers/HttpError.js";
+import { Op } from "sequelize";
+import { nanoid } from "nanoid";
+import sequelize from "../db/sequelize.js";
 
 const getRecipeIdsByIngredient = async (ingredientId) => {
   const links = await RecipeIngredient.findAll({
@@ -30,14 +30,14 @@ export const getRecipes = async ({
   const offset = (pageNumber - 1) * pageSize;
 
   const whereClause = {};
-  
+
   if (categoryid) {
     whereClause.categoryid = Sequelize.where(
       Sequelize.fn("LOWER", Sequelize.col("categoryid")),
       categoryid.toLowerCase()
     );
   }
-  
+
   if (areaid) {
     whereClause.areaid = Sequelize.where(
       Sequelize.fn("LOWER", Sequelize.col("areaid")),
@@ -51,10 +51,10 @@ export const getRecipes = async ({
     if (recipeIds.length === 0) {
       return { recipes: [], total: 0, page: pageNumber, totalPages: 0 };
     }
-    
+
     whereClause.id = { [Op.in]: recipeIds };
   }
-  
+
   const { rows, count } = await Recipe.findAndCountAll({
     where: whereClause,
     attributes: [
@@ -62,9 +62,7 @@ export const getRecipes = async ({
       "userid",
       "title",
       "thumb",
-      "area",
       "areaid",
-      "category",
       "categoryid",
       "description",
     ],
@@ -98,12 +96,6 @@ export const getRecipeById = async (id) => {
       },
     ],
   });
-
-  if (!recipe) {
-    const error = new Error("Recipe not found");
-    error.status = 404;
-    throw error;
-  }
 
   return recipe;
 };
@@ -146,68 +138,35 @@ export const getPopularRecipes = async ({ page, limit }) => {
 };
 
 export const createRecipe = async (recipeData, userId) => {
-  let areaid = null;
-  if (recipeData.area) {
-    let area = await Area.findOne({
-      where: Sequelize.where(
-        Sequelize.fn("LOWER", Sequelize.col("name")),
-        recipeData.area.toLowerCase()
-      ),
-    });
-    if (!area) {
-      area = await Area.create({ name: recipeData.area });
-    }
-    areaid = area.id;
-  }
-
-  const recipe = await Recipe.create({
-    title: recipeData.title,
-    category: recipeData.category,
-    categoryid: 1,
-    userid: userId,
-    area: recipeData.area || null,
-    areaid: areaid,
-    instructions: recipeData.instructions,
-    description: recipeData.description || null,
-    thumb: recipeData.thumb || null,
-    time: parseInt(recipeData.time, 10) || 0,
-  });
-
-  if (recipeData.ingredients?.length) {
-    await RecipeIngredient.bulkCreate(
-      recipeData.ingredients.map((ing) => ({
-        recipeid: String(recipe.id),
-        ingredientid: ing.id,
-        measure: ing.measure || "",
-      }))
-    );
-  }
-
-  return await Recipe.findByPk(recipe.id, {
-    include: [
+  const recipeId = await sequelize.transaction(async (t) => {
+    const recipe = await Recipe.create(
       {
-        model: RecipeIngredient,
-        as: "recipeIngredients",
-        attributes: ["measure"],
-        include: [
-          {
-            model: Ingredient,
-            as: "ingredient",
-            attributes: ["id", "name", "img", "description"],
-          },
-        ],
+        ...recipeData,
+        id: nanoid(),
+        userid: userId,
       },
-    ],
+      { transaction: t }
+    );
+
+    const ingredientsPayload = recipeData.ingredients.map((ing) => ({
+      recipeid: recipe.id,
+      ingredientid: ing.id,
+      measure: ing.measure ?? "",
+    }));
+
+    await RecipeIngredient.bulkCreate(ingredientsPayload, {
+      transaction: t,
+    });
+
+    return recipe.id;
   });
+
+  return await getRecipeById(recipeId);
 };
 
-export const deleteRecipe = async (recipeId, userId) => {
-  const recipe = await Recipe.findByPk(recipeId);
-  if (!recipe) throw HttpError(404, "Recipe not found");
-  if (recipe.userid !== userId) throw HttpError(403, "You can only delete your own recipes");
-
+export const deleteRecipe = async (recipeId) => {
   await RecipeIngredient.destroy({
-    where: { recipeid: String(recipeId) },
+    where: { recipeid: recipeId },
   });
   await Recipe.destroy({ where: { id: recipeId } });
 };

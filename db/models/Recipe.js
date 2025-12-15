@@ -5,15 +5,10 @@ const Recipe = sequelize.define(
   "recipe",
   {
     id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
+      type: DataTypes.STRING,
       primaryKey: true,
     },
     title: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    category: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -34,10 +29,6 @@ const Recipe = sequelize.define(
       },
       onUpdate: "CASCADE",
       onDelete: "CASCADE",
-    },
-    area: {
-      type: DataTypes.STRING,
-      allowNull: true,
     },
     areaid: {
       type: DataTypes.STRING,

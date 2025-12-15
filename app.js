@@ -4,7 +4,6 @@ import cors from "cors";
 
 import "dotenv/config";
 
-import connectDatabase from "./db/connectDatabase.js";
 import notFoundHander from "./middlewares/notFoundHandler.js";
 import errorHandler from "./middlewares/errorHandler.js";
 
