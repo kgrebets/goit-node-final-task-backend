@@ -14,6 +14,7 @@ import testimonialRouter from "./routes/testimonialRouter.js";
 import recipesRouter from "./routes/recipesRouter.js";
 import swaggerDocs from "./swagger/swagger.js";
 import userRouter from "./routes/userRouter.js";
+import categoryRouter from "./routes/categoryRouter.js";
 
 // import User from "./db/models/User.js";
 // User.sync({ alter: true });
@@ -44,6 +45,7 @@ app.use("/api/areas", areaRouter);
 app.use("/api/testimonials", testimonialRouter);
 app.use("/api/recipes", recipesRouter);
 app.use("/api/users", userRouter);
+app.use("/api/categories", categoryRouter);
 
 app.use(notFoundHander);
 app.use(errorHandler);
