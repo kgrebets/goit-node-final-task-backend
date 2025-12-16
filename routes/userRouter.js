@@ -8,7 +8,11 @@ import {
   unfollowUserController,
   getUserInfoByIdController,
   getCurrentUserController,
+  getLoggedInUserRecipesController,
+  getUserRecipesController,
 } from "../controllers/usersController.js";
+import { getUserRecipesSchema } from "../schemas/recipesSchemas.js";
+import validateQuery from "../helpers/validateQuery.js";
 
 const userRouter = Router();
 
@@ -68,6 +72,186 @@ userRouter.get("/me", authenticate, getCurrentUserController);
 
 /**
  * @swagger
+ * /api/users/recipes:
+ *   get:
+ *     summary: Get recipes of the logged-in user
+ *     description: Returns a paginated list of recipes created by the authenticated user
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 12
+ *         description: Number of recipes per page
+ *     responses:
+ *       200:
+ *         description: Paginated list of user's recipes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 total:
+ *                   type: integer
+ *                   example: 5
+ *                 page:
+ *                   type: integer
+ *                   example: 1
+ *                 totalPages:
+ *                   type: integer
+ *                   example: 1
+ *                 results:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         example: "Lcr2qK0ukWY3o7pQRn3lf"
+ *                       title:
+ *                         type: string
+ *                         example: "Integration test recipe"
+ *                       categoryid:
+ *                         type: string
+ *                         example: "6462a6cd4c3d0ddd28897f8d"
+ *                       areaid:
+ *                         type: string
+ *                         example: "6462a6f04c3d0ddd28897f9b"
+ *                       thumb:
+ *                         type: string
+ *                         example: "https://example.com/image.jpg"
+ *                       time:
+ *                         type: integer
+ *                         example: 45
+ *       401:
+ *         description: Unauthorized
+ */
+
+userRouter.get(
+  "/recipes",
+  authenticate,
+  validateQuery(getUserRecipesSchema),
+  getLoggedInUserRecipesController
+);
+
+/**
+ * @swagger
+ * /api/users/following:
+ *   get:
+ *     summary: Get users that the current user is following
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of users the current user follows
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                   email:
+ *                     type: string
+ *                   username:
+ *                     type: string
+ *                   avatar:
+ *                     type: string
+ *       401:
+ *         description: Unauthorized
+ */
+userRouter.get("/following", authenticate, getFollowingController);
+
+//USER-SCOPED ROUTES
+
+/**
+ * @swagger
+ * /api/users/{userId}/recipes:
+ *   get:
+ *     summary: Get recipes of a specific user
+ *     description: Returns a paginated list of recipes created by the specified user
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the user
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 12
+ *         description: Number of recipes per page
+ *     responses:
+ *       200:
+ *         description: Paginated list of user's recipes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 total:
+ *                   type: integer
+ *                   example: 3
+ *                 page:
+ *                   type: integer
+ *                   example: 1
+ *                 totalPages:
+ *                   type: integer
+ *                   example: 1
+ *                 results:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                       title:
+ *                         type: string
+ *                       categoryid:
+ *                         type: string
+ *                       areaid:
+ *                         type: string
+ *                       thumb:
+ *                         type: string
+ *                       time:
+ *                         type: integer
+ *       404:
+ *         description: User not found
+ */
+
+userRouter.get(
+  "/:userId/recipes",
+  validateQuery(getUserRecipesSchema),
+  getUserRecipesController
+);
+
+/**
+ * @swagger
  * /api/users/{userId}/followers:
  *   get:
  *     summary: Get followers of a user
@@ -105,37 +289,6 @@ userRouter.get("/me", authenticate, getCurrentUserController);
  *         description: User not found
  */
 userRouter.get("/:userId/followers", authenticate, getFollowersController);
-
-/**
- * @swagger
- * /api/users/following:
- *   get:
- *     summary: Get users that the current user is following
- *     tags: [Users]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: List of users the current user follows
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: string
- *                   email:
- *                     type: string
- *                   username:
- *                     type: string
- *                   avatar:
- *                     type: string
- *       401:
- *         description: Unauthorized
- */
-userRouter.get("/following", authenticate, getFollowingController);
 
 /**
  * @swagger
@@ -191,7 +344,7 @@ userRouter.post("/:userId/followers", authenticate, followUserController);
  */
 userRouter.delete("/:userId/followers", authenticate, unfollowUserController);
 
-
+//GENERIC USER ROUTE (MUST BE LAST)
 /**
  * @swagger
  * /api/users/{userId}:
@@ -231,5 +384,6 @@ userRouter.delete("/:userId/followers", authenticate, unfollowUserController);
  *         description: User not found
  */
 userRouter.get("/:userId", authenticate, getUserInfoByIdController);
+
 
 export default userRouter;
