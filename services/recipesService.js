@@ -4,7 +4,7 @@ import {
   Ingredient,
   UserFavorite,
 } from "../db/models/index.js";
-import { Op } from "sequelize";
+import { Sequelize, Op } from "sequelize";
 import { nanoid } from "nanoid";
 import sequelize from "../db/sequelize.js";
 

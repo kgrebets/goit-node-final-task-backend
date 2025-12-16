@@ -62,6 +62,46 @@ const recipesRouter = Router();
  *     responses:
  *       200:
  *         description: Paginated list of recipes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 total:
+ *                   type: integer
+ *                   example: 289
+ *                 page:
+ *                   type: integer
+ *                   example: 1
+ *                 totalPages:
+ *                   type: integer
+ *                   example: 25
+ *                 results:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         example: "Lcr2qK0ukWY3o7pQRn3lf"
+ *                       userid:
+ *                         type: string
+ *                         example: "zDCBgWYNelFmDgyGR7UC_"
+ *                       title:
+ *                         type: string
+ *                         example: "Integration test recipe"
+ *                       thumb:
+ *                         type: string
+ *                         example: "https://ftp.goit.study/img/so-yummy/preview/Saltfish%20and%20Ackee.jpg"
+ *                       areaid:
+ *                         type: string
+ *                         example: "6462a6f04c3d0ddd28897f9b"
+ *                       categoryid:
+ *                         type: string
+ *                         example: "6462a6cd4c3d0ddd28897f8d"
+ *                       description:
+ *                         type: string
+ *                         example: "Recipe created in integration test"
  */
 
 recipesRouter.get("/", validateQuery(getRecipesSchema), getRecipesController);
@@ -86,6 +126,31 @@ recipesRouter.get("/", validateQuery(getRecipesSchema), getRecipesController);
  *     responses:
  *       200:
  *         description: List of popular recipes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                     example: "6462a8f74c3d0ddd28898049"
+ *                   userid:
+ *                     type: string
+ *                     example: "64c8d958249fae54bae90bb8"
+ *                   title:
+ *                     type: string
+ *                     example: "Stamppot"
+ *                   thumb:
+ *                     type: string
+ *                     example: "https://ftp.goit.study/img/so-yummy/preview/Stamppot.jpg"
+ *                   description:
+ *                     type: string
+ *                     example: "A traditional Dutch dish made with mashed potatoes and vegetables"
+ *                   favoritesCount:
+ *                     type: integer
+ *                     example: 1
  */
 
 recipesRouter.get(
@@ -109,6 +174,61 @@ recipesRouter.get(
  *     responses:
  *       200:
  *         description: Recipe details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   example: "6462a8f74c3d0ddd28898049"
+ *                 title:
+ *                   type: string
+ *                   example: "Stamppot"
+ *                 categoryid:
+ *                   type: string
+ *                   example: "6462a6cd4c3d0ddd28897f91"
+ *                 userid:
+ *                   type: string
+ *                   example: "64c8d958249fae54bae90bb8"
+ *                 areaid:
+ *                   type: string
+ *                   example: "6462a6f04c3d0ddd28897fa8"
+ *                 instructions:
+ *                   type: string
+ *                   example: "Wash and peel the potatoes..."
+ *                 description:
+ *                   type: string
+ *                   example: "A traditional Dutch dish made with mashed potatoes and vegetables..."
+ *                 thumb:
+ *                   type: string
+ *                   example: "https://ftp.goit.study/img/so-yummy/preview/Stamppot.jpg"
+ *                 time:
+ *                   type: integer
+ *                   example: 40
+ *                 recipeIngredients:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       measure:
+ *                         type: string
+ *                         example: "1.5kg"
+ *                       ingredient:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: string
+ *                             example: "640c2dd963a319ea671e3746"
+ *                           name:
+ *                             type: string
+ *                             example: "Potatoes"
+ *                           img:
+ *                             type: string
+ *                             example: "https://ftp.goit.study/img/so-yummy/ingredients/640c2dd963a319ea671e3746.png"
+ *                           description:
+ *                             type: string
+ *                             example: "A starchy root vegetable..."
  *       404:
  *         description: Recipe not found
  */
