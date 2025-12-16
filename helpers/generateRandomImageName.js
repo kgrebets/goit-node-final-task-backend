@@ -1,0 +1,5 @@
+import crypto from "node:crypto";
+
+const randomImageName = (bytes = 32) => crypto.randomBytes(bytes).toString('hex');
+
+export default randomImageName;

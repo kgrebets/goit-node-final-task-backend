@@ -35,9 +35,6 @@ const User = sequelize.define("user", {
     type: DataTypes.STRING,
     allowNull: true,
     defaultValue: null,
-    validate: {
-      isUrl: true,
-    },
   },
 
   token: {

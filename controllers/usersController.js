@@ -1,4 +1,5 @@
 import userService from "../services/userService.js";
+import HttpError from "../helpers/HttpError.js";
 
 export const getFollowersController = async (req, res) => {
   const { userId } = req.params;
@@ -46,8 +47,15 @@ export const getCurrentUserController = async (req, res) => {
   const userId = req.user.id;
   const userInfo = await userService.getCurrentUserInfo(userId, req.user);
   res.status(200).json(userInfo);
-
 };
+
+export const updateCurrentUserAvatar = async (req, res) => {
+  const file = req.file;
+  const userId = req.user.id;
+  const avatar = await userService.updateCurrentUserAvatar(file, userId);
+
+  res.status(201).json(avatar);
+}
 
 export default {
   getFollowersController,

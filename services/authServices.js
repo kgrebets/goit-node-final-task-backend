@@ -6,6 +6,7 @@ import HttpError from "../helpers/HttpError.js";
 import { createToken, verifyToken } from "../helpers/jwt.js";
 import sendEmail from "../helpers/sendEmail.js";
 import { nanoid } from "nanoid";
+import getSignedAvatarUrl from "../helpers/getSignedAvatarUrl.js";
 
 const { PUBLIC_URL } = process.env;
 
@@ -71,7 +72,7 @@ export const loginUser = async ({ email, password }) => {
     user: {
       username: user.username,
       email: user.email,
-      avatar: user.avatar,
+      avatar: await getSignedAvatarUrl(user)
     },
   };
 };
@@ -86,7 +87,7 @@ export const refreshUser = async (user) => {
     user: {
       username: user.username,
       email: user.email,
-      avatar: user.avatar,
+      avatar: await getSignedAvatarUrl(user)
     },
   };
 };
