@@ -10,9 +10,11 @@ import {
   getCurrentUserController,
   getLoggedInUserRecipesController,
   getUserRecipesController,
+  updateCurrentUserAvatar
 } from "../controllers/usersController.js";
 import { getUserRecipesSchema } from "../schemas/recipesSchemas.js";
 import validateQuery from "../helpers/validateQuery.js";
+import upload from "../middlewares/upload.js";
 
 const userRouter = Router();
 
@@ -69,6 +71,38 @@ const userRouter = Router();
  *         description: Unauthorized - Authentication required
  */
 userRouter.get("/me", authenticate, getCurrentUserController);
+
+/**
+ * @swagger
+ * /api/users/me/avatar:
+ *   post:
+ *     summary: Update current user's avatar
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - avatar
+ *             properties:
+ *               avatar:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: Successfully updated current user's avatar
+ *       400:
+ *         description: Invalid request (e.g., cannot update avatar)
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: User not found
+ */
+userRouter.post("/me/avatar", authenticate, upload.single("avatar"), updateCurrentUserAvatar);
 
 /**
  * @swagger
@@ -153,6 +187,13 @@ userRouter.get(
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the user whose followers are requested
  *     responses:
  *       200:
  *         description: List of users the current user follows
@@ -243,6 +284,7 @@ userRouter.get("/following", authenticate, getFollowingController);
  *       404:
  *         description: User not found
  */
+userRouter.get("/:userId/followers", authenticate, getFollowersController);
 
 userRouter.get(
   "/:userId/recipes",
@@ -384,6 +426,5 @@ userRouter.delete("/:userId/followers", authenticate, unfollowUserController);
  *         description: User not found
  */
 userRouter.get("/:userId", authenticate, getUserInfoByIdController);
-
 
 export default userRouter;

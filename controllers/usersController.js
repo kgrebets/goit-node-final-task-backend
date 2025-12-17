@@ -69,6 +69,14 @@ export const getUserRecipesController = async (req, res) => {
   res.status(200).json(result);
 };
 
+export const updateCurrentUserAvatar = async (req, res) => {
+  const file = req.file;
+  const userId = req.user.id;
+  const avatar = await userService.updateCurrentUserAvatar(file, userId);
+
+  res.status(201).json(avatar);
+}
+
 export default {
   getFollowersController,
   getFollowingController,
