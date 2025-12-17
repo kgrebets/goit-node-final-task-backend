@@ -9,6 +9,9 @@ import {
   createRecipeController,
   deleteRecipeController,
   getPopularRecipesController,
+  getFavoriteRecipesController,
+  addRecipeToFavoritesController,
+  removeRecipeFromFavoritesController,
 } from "../controllers/recipesController.js";
 import {
   getRecipesSchema,
@@ -157,6 +160,150 @@ recipesRouter.get(
   "/popular",
   validateQuery(getPopularRecipesSchema),
   getPopularRecipesController
+);
+
+/**
+ * @swagger
+ * /api/recipes/favorites:
+ *   get:
+ *     summary: Get favorite recipes of the authenticated user
+ *     description: Returns a paginated list of recipes added to favorites by the authenticated user
+ *     tags: [Recipes]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 12
+ *         description: Number of recipes per page
+ *     responses:
+ *       200:
+ *         description: Paginated list of favorite recipes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 total:
+ *                   type: integer
+ *                   example: 3
+ *                 page:
+ *                   type: integer
+ *                   example: 1
+ *                 totalPages:
+ *                   type: integer
+ *                   example: 1
+ *                 results:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         example: "Lcr2qK0ukWY3o7pQRn3lf"
+ *                       title:
+ *                         type: string
+ *                         example: "Integration test recipe"
+ *                       categoryid:
+ *                         type: string
+ *                         example: "6462a6cd4c3d0ddd28897f8d"
+ *                       areaid:
+ *                         type: string
+ *                         example: "6462a6f04c3d0ddd28897f9b"
+ *                       thumb:
+ *                         type: string
+ *                         example: "https://example.com/image.jpg"
+ *                       time:
+ *                         type: integer
+ *                         example: 45
+ *       401:
+ *         description: Unauthorized
+ */
+
+recipesRouter.get("/favorites", authenticate, getFavoriteRecipesController);
+
+/**
+ * @swagger
+ * /api/recipes/{id}/favorite:
+ *   post:
+ *     summary: Add recipe to favorites
+ *     description: Adds the specified recipe to the authenticated user's favorites list
+ *     tags: [Recipes]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Recipe ID
+ *     responses:
+ *       201:
+ *         description: Recipe successfully added to favorites
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Recipe added to favorites
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Recipe not found
+ */
+
+recipesRouter.post("/:id/favorite", authenticate, addRecipeToFavoritesController);
+
+/**
+ * @swagger
+ * /api/recipes/{id}/favorite:
+ *   delete:
+ *     summary: Remove recipe from favorites
+ *     description: Removes the specified recipe from the authenticated user's favorites list
+ *     tags: [Recipes]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Recipe ID
+ *     responses:
+ *       200:
+ *         description: Recipe successfully removed from favorites
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Recipe removed from favorites
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Recipe not found in favorites
+ */
+
+recipesRouter.delete(
+  "/:id/favorite",
+  authenticate,
+  removeRecipeFromFavoritesController
 );
 
 /**

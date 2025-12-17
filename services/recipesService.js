@@ -170,3 +170,54 @@ export const deleteRecipe = async (recipeId) => {
   });
   await Recipe.destroy({ where: { id: recipeId } });
 };
+
+export const addToFavorites = async (userId, recipeId) => {
+  await UserFavorite.findOrCreate({
+    where: { userid: userId, recipeid: recipeId },
+  });
+};
+
+export const removeFromFavorites = async (userId, recipeId) => {
+  const deleted = await UserFavorite.destroy({
+    where: { userid: userId, recipeid: recipeId },
+  });
+
+  if (!deleted) return false;
+  return true;
+};
+
+export const getFavoriteRecipes = async (userId, page = 1, limit = 12) => {
+  const pageNumber = Number(page) || 1;
+  const pageSize = Number(limit) || 12;
+  const offset = (pageNumber - 1) * pageSize;
+
+  const { rows, count } = await Recipe.findAndCountAll({
+    include: [
+      {
+        model: UserFavorite,
+        as: "favorites",
+        where: { userid: userId },
+        attributes: [],
+      },
+    ],
+    order: [["title", "ASC"]],
+    limit: pageSize,
+    offset,
+    attributes: [
+      "id",
+      "title",
+      "categoryid",
+      "areaid",
+      "thumb",
+      "description",
+      "time",
+    ],
+  });
+
+  return {
+    total: count,
+    page: pageNumber,
+    totalPages: Math.ceil(count / pageSize),
+    results: rows,
+  };
+};
