@@ -69,3 +69,36 @@ export const deleteRecipeController = async (req, res) => {
 
   res.status(200).json({ message: "Recipe deleted successfully" });
 };
+
+export const getFavoriteRecipesController = async (req, res) => {
+  const userId = req.user.id;
+  const { page, limit } = req.query;
+
+  const data = await recipesService.getFavoriteRecipes(userId, page, limit);
+
+  res.status(200).json(data);
+};
+
+export const addRecipeToFavoritesController = async (req, res) => {
+  const userId = req.user.id;
+  const recipeId = req.params.id;
+
+  const recipe = await recipesService.getRecipeById(recipeId);
+  if (!recipe) throw HttpError(404, "Recipe not found");
+
+  await recipesService.addToFavorites(userId, recipeId);
+
+  res.status(201).json({ message: "Recipe added to favorites" });
+};
+
+export const removeRecipeFromFavoritesController = async (req, res) => {
+  const userId = req.user.id;
+  const recipeId = req.params.id;
+
+  const isRemoved = await recipesService.removeFromFavorites(userId, recipeId);
+  if (!isRemoved) {
+    throw HttpError(404, "Recipe not found in favorites");
+  }
+
+  res.status(200).json({ message: "Recipe removed from favorites" });
+};
