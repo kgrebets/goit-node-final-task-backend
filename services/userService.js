@@ -8,6 +8,7 @@ import { USER_AVATARS_S3_BUCKET_FOLDER } from "../helpers/constants.js";
 import randomImageName from "../helpers/generateRandomImageName.js";
 import sharp from "sharp";
 import getSignedAvatarUrl from "../helpers/getSignedAvatarUrl.js";
+import UserFavorite from "../db/models/UserFavorites.js";
 
 const getUserById = async (id) => {
   const user = await User.findByPk(id);
@@ -63,34 +64,32 @@ const unfollowUser = async (followerId, followingId) => {
 
 const getUserInfo = async (userId) => {
   const user = await User.findByPk(userId, {
-    attributes: ["id", "username", "email", "avatar"]
+    attributes: ["id", "username", "email", "avatar"],
   });
   if (!user) return null;
 
   const recipesCount = await Recipe.count({ where: { userid: userId } });
-  const followersCount = await UserFollow.count({ where: { followingId: userId } });
+  const followersCount = await UserFollow.count({
+    where: { followingId: userId },
+  });
 
-    return {
+  return {
     avatar: await getSignedAvatarUrl(user),
     name: user.username,
     email: user.email,
     recipesCount,
-    followersCount
+    followersCount,
   };
 };
-
 
 const getCurrentUserInfo = async (userId, user) => {
   const recipesCount = await Recipe.count({
     where: { userid: userId },
   });
 
-  // TODO: Implement favorites functionality
-  // const favoritesCount = await Favorite.count({
-  //   where: { userId },
-  // });
-  // Stub: returns -1 to indicate not implemented
-  const favoritesCount = -1;
+  const favoritesCount = await UserFavorite.count({
+    where: { userid: userId },
+  });
 
   const followersCount = await UserFollow.count({
     where: { followingId: userId },
@@ -109,6 +108,36 @@ const getCurrentUserInfo = async (userId, user) => {
     favoritesCount,
     followersCount,
     followingCount,
+  };
+};
+
+const getUserRecipes = async (userId, page, limit) => {
+  const pageNumber = Number(page) || 1;
+  const pageSize = Number(limit) || 12;
+  const offset = (pageNumber - 1) * pageSize;
+
+  const { rows, count } = await Recipe.findAndCountAll({
+    where: { userid: userId },
+    order: [["id", "DESC"]],
+    limit: pageSize,
+    offset,
+    attributes: [
+      "id",
+      "title",
+      "categoryid",
+      "areaid",
+      "thumb",
+      "description",
+      "instructions",
+      "time",
+    ],
+  });
+
+  return {
+    total: count,
+    page: pageNumber,
+    totalPages: Math.ceil(count / pageSize),
+    recipes: rows,
   };
 };
 
@@ -146,5 +175,6 @@ export default {
   unfollowUser,
   getUserInfo,
   getCurrentUserInfo,
+  getUserRecipes,
   updateCurrentUserAvatar
 };

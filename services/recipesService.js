@@ -4,7 +4,9 @@ import {
   Ingredient,
   UserFavorite,
 } from "../db/models/index.js";
-import { Op, Sequelize } from "sequelize";
+import { Sequelize, Op } from "sequelize";
+import { nanoid } from "nanoid";
+import sequelize from "../db/sequelize.js";
 
 const getRecipeIdsByIngredient = async (ingredientId) => {
   const links = await RecipeIngredient.findAll({
@@ -60,9 +62,7 @@ export const getRecipes = async ({
       "userid",
       "title",
       "thumb",
-      "area",
       "areaid",
-      "category",
       "categoryid",
       "description",
     ],
@@ -96,12 +96,6 @@ export const getRecipeById = async (id) => {
       },
     ],
   });
-
-  if (!recipe) {
-    const error = new Error("Recipe not found");
-    error.status = 404;
-    throw error;
-  }
 
   return recipe;
 };
@@ -141,4 +135,38 @@ export const getPopularRecipes = async ({ page, limit }) => {
   }));
 
   return recipesWithFavorites;
+};
+
+export const createRecipe = async (recipeData, userId) => {
+  const recipeId = await sequelize.transaction(async (t) => {
+    const recipe = await Recipe.create(
+      {
+        ...recipeData,
+        id: nanoid(),
+        userid: userId,
+      },
+      { transaction: t }
+    );
+
+    const ingredientsPayload = recipeData.ingredients.map((ing) => ({
+      recipeid: recipe.id,
+      ingredientid: ing.id,
+      measure: ing.measure ?? "",
+    }));
+
+    await RecipeIngredient.bulkCreate(ingredientsPayload, {
+      transaction: t,
+    });
+
+    return recipe.id;
+  });
+
+  return await getRecipeById(recipeId);
+};
+
+export const deleteRecipe = async (recipeId) => {
+  await RecipeIngredient.destroy({
+    where: { recipeid: recipeId },
+  });
+  await Recipe.destroy({ where: { id: recipeId } });
 };

@@ -4,18 +4,25 @@ import sequelize from "../sequelize.js";
 const RecipeIngredient = sequelize.define(
   "RecipeIngredient",
   {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
     recipeid: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true,
+      references: {
+        model: "recipes",
+        key: "id",
+      },
+      onDelete: "CASCADE",
     },
     ingredientid: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true,
+      references: {
+        model: "ingredients",
+        key: "id",
+      },
+      onDelete: "CASCADE",
     },
     measure: {
       type: DataTypes.STRING,
@@ -27,5 +34,4 @@ const RecipeIngredient = sequelize.define(
     timestamps: false,
   }
 );
-
 export default RecipeIngredient;
