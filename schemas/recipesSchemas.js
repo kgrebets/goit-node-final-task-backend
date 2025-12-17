@@ -39,3 +39,8 @@ export const createRecipeSchema = Joi.object({
 export const deleteRecipeSchema = Joi.object({
   id: Joi.string().required(),
 });
+
+export const getUserRecipesSchema = Joi.object({
+  page: Joi.number().integer().min(1).default(1),
+  limit: Joi.number().integer().min(1).default(12),
+});

@@ -58,22 +58,23 @@ const unfollowUser = async (followerId, followingId) => {
 
 const getUserInfo = async (userId) => {
   const user = await User.findByPk(userId, {
-    attributes: ["id", "username", "email", "avatar"]
+    attributes: ["id", "username", "email", "avatar"],
   });
   if (!user) return null;
 
   const recipesCount = await Recipe.count({ where: { userid: userId } });
-  const followersCount = await UserFollow.count({ where: { followingId: userId } });
+  const followersCount = await UserFollow.count({
+    where: { followingId: userId },
+  });
 
-    return {
+  return {
     avatar: user.avatar,
     name: user.username,
     email: user.email,
     recipesCount,
-    followersCount
+    followersCount,
   };
-}; 
-
+};
 
 const getCurrentUserInfo = async (userId, user) => {
   const recipesCount = await Recipe.count({
@@ -104,6 +105,36 @@ const getCurrentUserInfo = async (userId, user) => {
   };
 };
 
+const getUserRecipes = async (userId, page, limit) => {
+  const pageNumber = Number(page) || 1;
+  const pageSize = Number(limit) || 12;
+  const offset = (pageNumber - 1) * pageSize;
+
+  const { rows, count } = await Recipe.findAndCountAll({
+    where: { userid: userId },
+    order: [["id", "DESC"]],
+    limit: pageSize,
+    offset,
+    attributes: [
+      "id",
+      "title",
+      "categoryid",
+      "areaid",
+      "thumb",
+      "description",
+      "instructions",
+      "time",
+    ],
+  });
+
+  return {
+    total: count,
+    page: pageNumber,
+    totalPages: Math.ceil(count / pageSize),
+    recipes: rows,
+  };
+};
+
 export default {
   getFollowers,
   getFollowing,
@@ -111,4 +142,5 @@ export default {
   unfollowUser,
   getUserInfo,
   getCurrentUserInfo,
+  getUserRecipes,
 };
