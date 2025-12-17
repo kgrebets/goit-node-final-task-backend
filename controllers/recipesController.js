@@ -102,3 +102,25 @@ export const removeRecipeFromFavoritesController = async (req, res) => {
 
   res.status(200).json({ message: "Recipe removed from favorites" });
 };
+
+export const updateRecipeImageController = async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.id;
+  const image = req.file;
+
+  if (!image) {
+    throw HttpError(400, "Image file is required");
+  }
+
+  const recipe = await recipesService.getRecipeById(id);
+  if (recipe.userid !== userId) {
+    throw HttpError(403, "You are not allowed to update this recipe");
+  }
+
+  const imageName = await recipesService.updateRecipeImage(image, id);
+
+  res.status(200).json({
+    id: id,
+    thumb: imageName,
+  });
+};

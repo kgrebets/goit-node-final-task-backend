@@ -12,6 +12,7 @@ import {
   getFavoriteRecipesController,
   addRecipeToFavoritesController,
   removeRecipeFromFavoritesController,
+  updateRecipeImageController,
 } from "../controllers/recipesController.js";
 import {
   getRecipesSchema,
@@ -20,6 +21,7 @@ import {
   deleteRecipeSchema,
   getPopularRecipesSchema,
 } from "../schemas/recipesSchemas.js";
+import upload from "../middlewares/upload.js";
 
 const recipesRouter = Router();
 
@@ -304,6 +306,66 @@ recipesRouter.delete(
   "/:id/favorite",
   authenticate,
   removeRecipeFromFavoritesController
+);
+
+/**
+ * @swagger
+ * /api/recipes/{id}/image:
+ *   post:
+ *     summary: Upload or update recipe image
+ *     description: Uploads an image for a recipe or replaces the existing one. Only the recipe owner can update the image.
+ *     tags: [Recipes]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Recipe ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - image
+ *             properties:
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: Image file for the recipe
+ *     responses:
+ *       200:
+ *         description: Recipe image updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   example: "Lcr2qK0ukWY3o7pQRn3lf"
+ *                 thumb:
+ *                   type: string
+ *                   example: "https://example.com/recipes/Lcr2qK0ukWY3o7pQRn3lf.webp"
+ *       400:
+ *         description: Invalid file or missing image
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden – you are not the owner of this recipe
+ *       404:
+ *         description: Recipe not found
+ */
+
+recipesRouter.post(
+  "/:id/image",
+  authenticate,
+  upload.single("image"),
+  updateRecipeImageController
 );
 
 /**

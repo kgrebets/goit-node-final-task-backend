@@ -7,6 +7,11 @@ import {
 import { Sequelize, Op } from "sequelize";
 import { nanoid } from "nanoid";
 import sequelize from "../db/sequelize.js";
+import { USER_IMAGE_S3_BUCKET_FOLDER } from "../helpers/constants.js";
+import randomImageName from "../helpers/generateRandomImageName.js";
+import sharp from "sharp";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import s3Client from "../uploader/s3-client.js";
 
 const getRecipeIdsByIngredient = async (ingredientId) => {
   const links = await RecipeIngredient.findAll({
@@ -220,4 +225,27 @@ export const getFavoriteRecipes = async (userId, page = 1, limit = 12) => {
     totalPages: Math.ceil(count / pageSize),
     results: rows,
   };
+};
+
+export const updateRecipeImage = async (image, recipeId) => {
+  const recipe = await Recipe.findByPk(recipeId);
+  const imageName = `${USER_IMAGE_S3_BUCKET_FOLDER}/${recipeId}/${randomImageName()}.webp`;
+
+  const imageBuffer = await sharp(image.buffer)
+    .resize({ width: 550, height: 400, fit: "cover" })
+    .toFormat("webp", { quality: 80 })
+    .toBuffer();
+
+  const command = new PutObjectCommand({
+    Bucket: process.env.AWS_BUCKET_NAME,
+    Key: imageName,
+    Body: imageBuffer,
+    ContentType: "image/webp",
+  });
+
+  await s3Client.send(command);
+
+  await recipe.update({ thumb: imageName });
+
+  return imageName;
 };
