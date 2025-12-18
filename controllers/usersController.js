@@ -36,7 +36,8 @@ export const unfollowUserController = async (req, res) => {
 
 export const getUserInfoByIdController = async (req, res) => {
   const { userId } = req.params;
-  const user = await userService.getUserInfo(userId);
+  const currentUserId = req.user?.id;
+  const user = await userService.getUserInfo(userId, currentUserId);
   if (!user) return res.status(404).json({ message: "User not found" });
   res.status(200).json(user);
 };

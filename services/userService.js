@@ -62,7 +62,7 @@ const unfollowUser = async (followerId, followingId) => {
   return true;
 };
 
-const getUserInfo = async (userId) => {
+const getUserInfo = async (userId, currentUserId = null) => {
   const user = await User.findByPk(userId, {
     attributes: ["id", "username", "email", "avatar"],
   });
@@ -73,12 +73,24 @@ const getUserInfo = async (userId) => {
     where: { followingId: userId },
   });
 
+  let isFollowing = false;
+  if (currentUserId) {      
+    const follow = await UserFollow.findOne({ 
+      where: {                                
+        followerId: currentUserId,            
+        followingId: userId                 
+      }                                       
+    });                                     
+    isFollowing = !!follow;                  
+  }                                          
+
   return {
     avatar: await getSignedAvatarUrl(user),
     name: user.username,
     email: user.email,
     recipesCount,
     followersCount,
+    isFollowing,
   };
 };
 
