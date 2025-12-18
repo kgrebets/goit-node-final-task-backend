@@ -74,6 +74,7 @@ const getUserInfo = async (userId) => {
   });
 
   return {
+    id: user.id,
     avatar: await getSignedAvatarUrl(user),
     name: user.username,
     email: user.email,
