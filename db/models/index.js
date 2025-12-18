@@ -4,6 +4,8 @@ import Testimonial from "./Testimonial.js";
 import Recipe from "./Recipe.js";
 import RecipeIngredient from "./RecipeIngredient.js";
 import Ingredient from "./Ingredient.js";
+import Category from "./Category.js";
+import Area from "./Area.js";
 
 User.hasMany(Testimonial, { foreignKey: "userid", onDelete: "CASCADE" });
 
@@ -85,6 +87,18 @@ UserFavorite.belongsTo(User, {
   onUpdate: "CASCADE",
 });
 
+Recipe.belongsTo(Category, {
+  foreignKey: "categoryid",
+  targetKey: "id",
+  as: "category",
+});
+
+Recipe.belongsTo(Area, {
+  foreignKey: "areaid",
+  targetKey: "id",
+  as: "area",
+});
+
 export {
   User,
   Testimonial,
@@ -92,4 +106,6 @@ export {
   RecipeIngredient,
   Ingredient,
   UserFavorite,
+  Category,
+  Area,
 };

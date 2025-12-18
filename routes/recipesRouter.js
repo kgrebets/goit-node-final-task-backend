@@ -41,30 +41,37 @@ const recipesRouter = Router();
  *         name: page
  *         schema:
  *           type: integer
+ *           minimum: 1
  *           example: 1
+ *         description: Page number (starts from 1)
  *       - in: query
  *         name: limit
  *         schema:
  *           type: integer
+ *           minimum: 1
  *           example: 12
+ *         description: Items per page
  *       - in: query
  *         name: categoryid
  *         schema:
  *           type: string
  *           example: "6462a6cd4c3d0ddd28897f8d"
+ *         description: Category ID to filter recipes
  *       - in: query
  *         name: areaid
  *         schema:
  *           type: string
- *           example: "6462a6f04c3d0ddd28897f9b"
+ *           example: "6462a6f04c3d0ddd28897fa3"
+ *         description: Area ID to filter recipes
  *       - in: query
- *         name: ingredient
+ *         name: ingredientid
  *         schema:
  *           type: string
- *           example: "640c2dd963a319ea671e367e"
+ *           example: "640c2dd963a319ea671e3664"
+ *         description: Ingredient ID to filter recipes
  *     responses:
  *       200:
- *         description: Paginated list of recipes
+ *         description: Paginated list of recipes (can be empty)
  *         content:
  *           application/json:
  *             schema:
@@ -72,13 +79,13 @@ const recipesRouter = Router();
  *               properties:
  *                 total:
  *                   type: integer
- *                   example: 289
+ *                   example: 4
  *                 page:
  *                   type: integer
  *                   example: 1
  *                 totalPages:
  *                   type: integer
- *                   example: 25
+ *                   example: 1
  *                 results:
  *                   type: array
  *                   items:
@@ -86,25 +93,81 @@ const recipesRouter = Router();
  *                     properties:
  *                       id:
  *                         type: string
- *                         example: "Lcr2qK0ukWY3o7pQRn3lf"
- *                       userid:
- *                         type: string
- *                         example: "zDCBgWYNelFmDgyGR7UC_"
+ *                         example: "6462a8f74c3d0ddd288980b8"
  *                       title:
  *                         type: string
- *                         example: "Integration test recipe"
+ *                         example: "Chicken Marengo"
  *                       thumb:
  *                         type: string
- *                         example: "https://ftp.goit.study/img/so-yummy/preview/Saltfish%20and%20Ackee.jpg"
- *                       areaid:
- *                         type: string
- *                         example: "6462a6f04c3d0ddd28897f9b"
- *                       categoryid:
- *                         type: string
- *                         example: "6462a6cd4c3d0ddd28897f8d"
+ *                         nullable: true
+ *                         example: "https://ftp.goit.study/img/so-yummy/preview/Chicken%20Marengo.jpg"
  *                       description:
  *                         type: string
- *                         example: "Recipe created in integration test"
+ *                         nullable: true
+ *                         example: "A classic French chicken dish made with sautéed chicken in a tomato and wine sauce, served with mushrooms and olives."
+ *                       Creator:
+ *                         type: object
+ *                         nullable: true
+ *                         properties:
+ *                           id:
+ *                             type: string
+ *                             example: "n-QaIbsY-Gk9Ggee4eGQ-"
+ *                           username:
+ *                             type: string
+ *                             example: "Darya"
+ *                           avatar:
+ *                             type: string
+ *                             nullable: true
+ *                             example: null
+ *                       category:
+ *                         type: object
+ *                         nullable: true
+ *                         properties:
+ *                           id:
+ *                             type: string
+ *                             example: "6462a6cd4c3d0ddd28897f8d"
+ *                           name:
+ *                             type: string
+ *                             example: "Chicken"
+ *                       area:
+ *                         type: object
+ *                         nullable: true
+ *                         properties:
+ *                           id:
+ *                             type: string
+ *                             example: "6462a6f04c3d0ddd28897fa3"
+ *                           name:
+ *                             type: string
+ *                             example: "French"
+ *             examples:
+ *               success:
+ *                 summary: Recipes found
+ *                 value:
+ *                   total: 4
+ *                   page: 1
+ *                   totalPages: 1
+ *                   results:
+ *                     - id: "6462a8f74c3d0ddd288980b8"
+ *                       title: "Chicken Marengo"
+ *                       thumb: "https://ftp.goit.study/img/so-yummy/preview/Chicken%20Marengo.jpg"
+ *                       description: "A classic French chicken dish made with sautéed chicken in a tomato and wine sauce, served with mushrooms and olives."
+ *                       Creator:
+ *                         id: "n-QaIbsY-Gk9Ggee4eGQ-"
+ *                         username: "Darya"
+ *                         avatar: null
+ *                       category:
+ *                         id: "6462a6cd4c3d0ddd28897f8d"
+ *                         name: "Chicken"
+ *                       area:
+ *                         id: "6462a6f04c3d0ddd28897fa3"
+ *                         name: "French"
+ *               empty:
+ *                 summary: No recipes match the filters
+ *                 value:
+ *                   total: 0
+ *                   page: 1
+ *                   totalPages: 0
+ *                   results: []
  */
 
 recipesRouter.get("/", validateQuery(getRecipesSchema), getRecipesController);
@@ -113,22 +176,26 @@ recipesRouter.get("/", validateQuery(getRecipesSchema), getRecipesController);
  * @swagger
  * /api/recipes/popular:
  *   get:
- *     summary: Get popular recipes
+ *     summary: Get popular recipes (most favorited)
  *     tags: [Recipes]
  *     parameters:
  *       - in: query
  *         name: page
  *         schema:
  *           type: integer
+ *           minimum: 1
  *           example: 1
+ *         description: Page number (starts from 1)
  *       - in: query
  *         name: limit
  *         schema:
  *           type: integer
+ *           minimum: 1
  *           example: 4
+ *         description: Items per page
  *     responses:
  *       200:
- *         description: List of popular recipes
+ *         description: List of popular recipes ordered by favorites count (can be empty)
  *         content:
  *           application/json:
  *             schema:
@@ -138,22 +205,60 @@ recipesRouter.get("/", validateQuery(getRecipesSchema), getRecipesController);
  *                 properties:
  *                   id:
  *                     type: string
- *                     example: "6462a8f74c3d0ddd28898049"
- *                   userid:
- *                     type: string
- *                     example: "64c8d958249fae54bae90bb8"
+ *                     example: "6462a8f74c3d0ddd28897fe0"
  *                   title:
  *                     type: string
- *                     example: "Stamppot"
+ *                     example: "Ribollita"
  *                   thumb:
  *                     type: string
- *                     example: "https://ftp.goit.study/img/so-yummy/preview/Stamppot.jpg"
+ *                     nullable: true
+ *                     example: "https://ftp.goit.study/img/so-yummy/preview/Ribollita.jpg"
  *                   description:
  *                     type: string
- *                     example: "A traditional Dutch dish made with mashed potatoes and vegetables"
+ *                     nullable: true
+ *                     example: "A Tuscan soup made with vegetables, bread, and beans, often served as a hearty main dish."
+ *                   Creator:
+ *                     type: object
+ *                     nullable: true
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         example: "n-QaIbsY-Gk9Ggee4eGQ-"
+ *                       username:
+ *                         type: string
+ *                         example: "Darya"
+ *                       avatar:
+ *                         type: string
+ *                         nullable: true
+ *                         example: null
  *                   favoritesCount:
  *                     type: integer
  *                     example: 1
+ *             examples:
+ *               success:
+ *                 summary: Popular recipes
+ *                 value:
+ *                   - id: "6462a8f74c3d0ddd28897fe0"
+ *                     title: "Ribollita"
+ *                     thumb: "https://ftp.goit.study/img/so-yummy/preview/Ribollita.jpg"
+ *                     description: "A Tuscan soup made with vegetables, bread, and beans, often served as a hearty main dish."
+ *                     Creator:
+ *                       id: "n-QaIbsY-Gk9Ggee4eGQ-"
+ *                       username: "Darya"
+ *                       avatar: null
+ *                     favoritesCount: 1
+ *                   - id: "6462a8f74c3d0ddd28897fe3"
+ *                     title: "Full English Breakfast"
+ *                     thumb: "recipes/6462a8f74c3d0ddd28897fe3/7306eb16ad5fd41b3eaff054b6768ede2fac6a40ad36e005346e766f6463963c.webp"
+ *                     description: "Similar to the English Breakfast, but with additional items like black pudding, fried mushrooms, and hash browns. It is a more substantial breakfast meal."
+ *                     Creator:
+ *                       id: "wh8ghsPfXj_QSIowtir9_"
+ *                       username: "johndoe"
+ *                       avatar: null
+ *                     favoritesCount: 1
+ *               empty:
+ *                 summary: No popular recipes yet
+ *                 value: []
  */
 
 recipesRouter.get(
@@ -265,7 +370,11 @@ recipesRouter.get("/favorites", authenticate, getFavoriteRecipesController);
  *         description: Recipe not found
  */
 
-recipesRouter.post("/:id/favorite", authenticate, addRecipeToFavoritesController);
+recipesRouter.post(
+  "/:id/favorite",
+  authenticate,
+  addRecipeToFavoritesController
+);
 
 /**
  * @swagger
@@ -318,6 +427,8 @@ recipesRouter.delete(
  *         required: true
  *         schema:
  *           type: string
+ *           example: "6462a8f74c3d0ddd28897fe3"
+ *         description: Recipe ID
  *     responses:
  *       200:
  *         description: Recipe details
@@ -328,31 +439,55 @@ recipesRouter.delete(
  *               properties:
  *                 id:
  *                   type: string
- *                   example: "6462a8f74c3d0ddd28898049"
+ *                   example: "6462a8f74c3d0ddd28897fe3"
  *                 title:
  *                   type: string
- *                   example: "Stamppot"
- *                 categoryid:
- *                   type: string
- *                   example: "6462a6cd4c3d0ddd28897f91"
- *                 userid:
- *                   type: string
- *                   example: "64c8d958249fae54bae90bb8"
- *                 areaid:
- *                   type: string
- *                   example: "6462a6f04c3d0ddd28897fa8"
- *                 instructions:
- *                   type: string
- *                   example: "Wash and peel the potatoes..."
+ *                   example: "Full English Breakfast"
  *                 description:
  *                   type: string
- *                   example: "A traditional Dutch dish made with mashed potatoes and vegetables..."
+ *                   nullable: true
+ *                   example: "Similar to the English Breakfast, but with additional items like black pudding, fried mushrooms, and hash browns. It is a more substantial breakfast meal."
+ *                 instructions:
+ *                   type: string
+ *                   example: "Heat the flat grill plate over a low heat..."
  *                 thumb:
  *                   type: string
- *                   example: "https://ftp.goit.study/img/so-yummy/preview/Stamppot.jpg"
- *                 time:
- *                   type: integer
- *                   example: 40
+ *                   nullable: true
+ *                   example: "recipes/6462a8f74c3d0ddd28897fe3/7306eb16ad5fd41b3eaff054b6768ede2fac6a40ad36e005346e766f6463963c.webp"
+ *                 Creator:
+ *                   type: object
+ *                   nullable: true
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: "wh8ghsPfXj_QSIowtir9_"
+ *                     username:
+ *                       type: string
+ *                       example: "johndoe"
+ *                     avatar:
+ *                       type: string
+ *                       nullable: true
+ *                       example: null
+ *                 category:
+ *                   type: object
+ *                   nullable: true
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: "6462a6cd4c3d0ddd28897f95"
+ *                     name:
+ *                       type: string
+ *                       example: "Breakfast"
+ *                 area:
+ *                   type: object
+ *                   nullable: true
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: "6462a6f04c3d0ddd28897fa1"
+ *                     name:
+ *                       type: string
+ *                       example: "British"
  *                 recipeIngredients:
  *                   type: array
  *                   items:
@@ -360,24 +495,35 @@ recipesRouter.delete(
  *                     properties:
  *                       measure:
  *                         type: string
- *                         example: "1.5kg"
+ *                         nullable: true
+ *                         example: "4"
  *                       ingredient:
  *                         type: object
  *                         properties:
  *                           id:
  *                             type: string
- *                             example: "640c2dd963a319ea671e3746"
+ *                             example: "640c2dd963a319ea671e3664"
  *                           name:
  *                             type: string
- *                             example: "Potatoes"
+ *                             example: "Bacon"
  *                           img:
  *                             type: string
- *                             example: "https://ftp.goit.study/img/so-yummy/ingredients/640c2dd963a319ea671e3746.png"
+ *                             nullable: true
+ *                             example: "https://ftp.goit.study/img/so-yummy/ingredients/640c2dd963a319ea671e3664.png"
  *                           description:
  *                             type: string
- *                             example: "A starchy root vegetable..."
+ *                             nullable: true
+ *                             example: "Bacon is a type of salt-cured pork..."
  *       404:
  *         description: Recipe not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Recipe not found"
  */
 
 recipesRouter.get(

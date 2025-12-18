@@ -7,19 +7,32 @@
  *       properties:
  *         id:
  *           type: string
- *           example: "6462a8f74c3d0ddd28897fb8"
- *         userid:
- *           type: string
- *           example: "n-QaIbsY-Gk9Ggee4eGQ-"
+ *           example: "6462a8f74c3d0ddd28897fe0"
  *         title:
  *           type: string
- *           example: "Mediterranean Pasta Salad"
+ *           example: "Ribollita"
  *         thumb:
  *           type: string
- *           example: "https://ftp.goit.study/img/so-yummy/preview/Mediterranean%20Pasta%20Salad.jpg"
+ *           nullable: true
+ *           example: "https://ftp.goit.study/img/so-yummy/preview/Ribollita.jpg"
  *         description:
  *           type: string
- *           example: "A salad made with pasta, vegetables..."
+ *           nullable: true
+ *           example: "A Tuscan soup made with vegetables, bread, and beans, often served as a hearty main dish."
+ *         Creator:
+ *           type: object
+ *           nullable: true
+ *           properties:
+ *             id:
+ *               type: string
+ *               example: "n-QaIbsY-Gk9Ggee4eGQ-"
+ *             username:
+ *               type: string
+ *               example: "Darya"
+ *             avatar:
+ *               type: string
+ *               nullable: true
+ *               example: null
  *         favoritesCount:
  *           type: integer
  *           example: 1
@@ -54,37 +67,55 @@
  *       properties:
  *         id:
  *           type: string
- *           example: "6462a8f74c3d0ddd28898049"
+ *           example: "6462a8f74c3d0ddd28897fe3"
  *         title:
  *           type: string
- *           example: "Stamppot"
- *         category:
- *           type: string
- *           example: "Pork"
- *         categoryid:
- *           type: string
- *           example: "6462a6cd4c3d0ddd28897f91"
- *         userid:
- *           type: string
- *           example: "64c8d958249fae54bae90bb8"
- *         area:
- *           type: string
- *           example: "Dutch"
- *         areaid:
- *           type: string
- *           example: "6462a6f04c3d0ddd28897fa8"
- *         instructions:
- *           type: string
- *           example: "Wash and peel the potatoes..."
+ *           example: "Full English Breakfast"
  *         description:
  *           type: string
- *           example: "A traditional Dutch dish made with mashed potatoes..."
+ *           nullable: true
+ *           example: "Similar to the English Breakfast, but with additional items like black pudding..."
+ *         instructions:
+ *           type: string
+ *           example: "Heat the flat grill plate over a low heat..."
  *         thumb:
  *           type: string
- *           example: "https://ftp.goit.study/img/so-yummy/preview/Stamppot.jpg"
- *         time:
- *           type: integer
- *           example: 40
+ *           nullable: true
+ *           example: "recipes/6462a8f74c3d0ddd28897fe3/image.webp"
+ *         Creator:
+ *           type: object
+ *           nullable: true
+ *           properties:
+ *             id:
+ *               type: string
+ *               example: "wh8ghsPfXj_QSIowtir9_"
+ *             username:
+ *               type: string
+ *               example: "johndoe"
+ *             avatar:
+ *               type: string
+ *               nullable: true
+ *               example: null
+ *         category:
+ *           type: object
+ *           nullable: true
+ *           properties:
+ *             id:
+ *               type: string
+ *               example: "6462a6cd4c3d0ddd28897f95"
+ *             name:
+ *               type: string
+ *               example: "Breakfast"
+ *         area:
+ *           type: object
+ *           nullable: true
+ *           properties:
+ *             id:
+ *               type: string
+ *               example: "6462a6f04c3d0ddd28897fa1"
+ *             name:
+ *               type: string
+ *               example: "British"
  *         recipeIngredients:
  *           type: array
  *           items:
@@ -95,31 +126,52 @@
  *       properties:
  *         id:
  *           type: string
- *           example: "6467fb9d3d8125271a59219e"
- *         userid:
- *           type: string
- *           example: "n-QaIbsY-Gk9Ggee4eGQ-"
+ *           example: "6462a8f74c3d0ddd288980b8"
  *         title:
  *           type: string
- *           example: "Oatmeal Cookies With Peanuts"
+ *           example: "Chicken Marengo"
  *         thumb:
  *           type: string
- *           example: "https://ftp.goit.study/img/so-yummy/preview/Oatmeal%20Cookies%20With%20Peanuts.jpg"
- *         area:
- *           type: string
- *           example: "Ukrainian"
- *         areaid:
- *           type: string
- *           example: "6462a6f04c3d0ddd28897f9b"
- *         category:
- *           type: string
- *           example: "Dessert"
- *         categoryid:
- *           type: string
- *           example: "6462a6cd4c3d0ddd28897f8f"
+ *           nullable: true
+ *           example: "https://ftp.goit.study/img/so-yummy/preview/Chicken%20Marengo.jpg"
  *         description:
  *           type: string
- *           example: "Cookies are seasonless, do you agree with me?..."
+ *           nullable: true
+ *           example: "A classic French chicken dish made with sautéed chicken in a tomato and wine sauce..."
+ *         Creator:
+ *           type: object
+ *           nullable: true
+ *           properties:
+ *             id:
+ *               type: string
+ *               example: "n-QaIbsY-Gk9Ggee4eGQ-"
+ *             username:
+ *               type: string
+ *               example: "Darya"
+ *             avatar:
+ *               type: string
+ *               nullable: true
+ *               example: null
+ *         category:
+ *           type: object
+ *           nullable: true
+ *           properties:
+ *             id:
+ *               type: string
+ *               example: "6462a6cd4c3d0ddd28897f8d"
+ *             name:
+ *               type: string
+ *               example: "Chicken"
+ *         area:
+ *           type: object
+ *           nullable: true
+ *           properties:
+ *             id:
+ *               type: string
+ *               example: "6462a6f04c3d0ddd28897fa3"
+ *             name:
+ *               type: string
+ *               example: "French"
  *
  *     RecipesListResponse:
  *       type: object

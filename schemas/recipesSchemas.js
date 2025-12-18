@@ -5,7 +5,7 @@ export const getRecipesSchema = Joi.object({
   limit: Joi.number().integer().min(1).default(12),
   categoryid: Joi.string().optional(),
   areaid: Joi.string().optional(),
-  ingredient: Joi.string().optional(),
+  ingredientid: Joi.string().optional(),
 });
 
 export const getRecipeByIdSchema = Joi.object({

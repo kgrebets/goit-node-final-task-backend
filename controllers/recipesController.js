@@ -2,7 +2,7 @@ import HttpError from "../helpers/HttpError.js";
 import * as recipesService from "../services/recipesService.js";
 
 export const getRecipesController = async (req, res) => {
-  const { page, limit, categoryid, areaid, ingredient } = req.query;
+  const { page, limit, categoryid, areaid, ingredientid } = req.query;
 
   const {
     recipes,
@@ -14,7 +14,7 @@ export const getRecipesController = async (req, res) => {
     limit,
     categoryid,
     areaid,
-    ingredient,
+    ingredientid,
   });
 
   res.json({

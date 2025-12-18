@@ -3,6 +3,9 @@ import {
   RecipeIngredient,
   Ingredient,
   UserFavorite,
+  Category,
+  Area,
+  User,
 } from "../db/models/index.js";
 import { Sequelize, Op } from "sequelize";
 import { nanoid } from "nanoid";
@@ -23,7 +26,7 @@ export const getRecipes = async ({
   limit,
   categoryid,
   areaid,
-  ingredient,
+  ingredientid,
 }) => {
   const pageNumber = Number(page) || 1;
   const pageSize = Number(limit) || 12;
@@ -31,22 +34,11 @@ export const getRecipes = async ({
 
   const whereClause = {};
 
-  if (categoryid) {
-    whereClause.categoryid = Sequelize.where(
-      Sequelize.fn("LOWER", Sequelize.col("categoryid")),
-      categoryid.toLowerCase()
-    );
-  }
+  if (categoryid) whereClause.categoryid = categoryid;
+  if (areaid) whereClause.areaid = areaid;
 
-  if (areaid) {
-    whereClause.areaid = Sequelize.where(
-      Sequelize.fn("LOWER", Sequelize.col("areaid")),
-      areaid.toLowerCase()
-    );
-  }
-
-  if (ingredient) {
-    const recipeIds = await getRecipeIdsByIngredient(ingredient);
+  if (ingredientid) {
+    const recipeIds = await getRecipeIdsByIngredient(ingredientid);
 
     if (recipeIds.length === 0) {
       return { recipes: [], total: 0, page: pageNumber, totalPages: 0 };
@@ -57,14 +49,11 @@ export const getRecipes = async ({
 
   const { rows, count } = await Recipe.findAndCountAll({
     where: whereClause,
-    attributes: [
-      "id",
-      "userid",
-      "title",
-      "thumb",
-      "areaid",
-      "categoryid",
-      "description",
+    attributes: ["id", "title", "thumb", "description"],
+    include: [
+      { model: User, as: "Creator", attributes: ["id", "username", "avatar"] },
+      { model: Category, as: "category", attributes: ["id", "name"] },
+      { model: Area, as: "area", attributes: ["id", "name"] },
     ],
     limit: pageSize,
     offset,
@@ -72,7 +61,7 @@ export const getRecipes = async ({
   });
 
   return {
-    recipes: rows,
+    recipes: rows.map((r) => r.toJSON()),
     total: count,
     page: pageNumber,
     totalPages: Math.ceil(count / pageSize),
@@ -81,7 +70,11 @@ export const getRecipes = async ({
 
 export const getRecipeById = async (id) => {
   const recipe = await Recipe.findByPk(id, {
+    attributes: ["id", "title", "description", "instructions", "thumb"],
     include: [
+      { model: User, as: "Creator", attributes: ["id", "username", "avatar"] },
+      { model: Category, as: "category", attributes: ["id", "name"] },
+      { model: Area, as: "area", attributes: ["id", "name"] },
       {
         model: RecipeIngredient,
         as: "recipeIngredients",
@@ -112,7 +105,7 @@ export const getPopularRecipes = async ({ page, limit }) => {
     ],
     group: ["recipeid"],
     order: [[Sequelize.fn("COUNT", Sequelize.col("recipeid")), "DESC"]],
-    limit: limit,
+    limit,
     offset,
     raw: true,
   });
@@ -121,20 +114,27 @@ export const getPopularRecipes = async ({ page, limit }) => {
 
   const recipes = await Recipe.findAll({
     where: { id: { [Op.in]: recipeIds } },
-    attributes: ["id", "userid", "title", "thumb", "description"],
-    raw: true,
+    attributes: ["id", "title", "thumb", "description"],
+    include: [
+      {
+        model: User,
+        as: "Creator",
+        attributes: ["id", "username", "avatar"],
+      },
+    ],
   });
 
   const countMap = new Map(
     popular.map((p) => [p.recipeid, Number(p.favoritesCount)])
   );
 
-  const recipesWithFavorites = recipes.map((recipe) => ({
-    ...recipe,
-    favoritesCount: countMap.get(recipe.id) || 0,
-  }));
-
-  return recipesWithFavorites;
+  return recipes.map((recipe) => {
+    const r = recipe.toJSON();
+    return {
+      ...r,
+      favoritesCount: countMap.get(r.id) || 0,
+    };
+  });
 };
 
 export const createRecipe = async (recipeData, userId) => {
