@@ -70,7 +70,7 @@ export const getRecipes = async ({
 
 export const getRecipeById = async (id) => {
   const recipe = await Recipe.findByPk(id, {
-    attributes: ["id", "title", "description", "instructions", "thumb"],
+    attributes: ["id", "title", "time", "description", "instructions", "thumb"],
     include: [
       { model: User, as: "Creator", attributes: ["id", "username", "avatar"] },
       { model: Category, as: "category", attributes: ["id", "name"] },

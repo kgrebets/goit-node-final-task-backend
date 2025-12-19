@@ -97,6 +97,10 @@ const recipesRouter = Router();
  *                       title:
  *                         type: string
  *                         example: "Chicken Marengo"
+ *                       time:
+ *                         type: integer
+ *                         description: Cooking time in minutes
+ *                         example: 45
  *                       thumb:
  *                         type: string
  *                         nullable: true
@@ -149,6 +153,7 @@ const recipesRouter = Router();
  *                   results:
  *                     - id: "6462a8f74c3d0ddd288980b8"
  *                       title: "Chicken Marengo"
+ *                       time: 45
  *                       thumb: "https://ftp.goit.study/img/so-yummy/preview/Chicken%20Marengo.jpg"
  *                       description: "A classic French chicken dish made with sautéed chicken in a tomato and wine sauce, served with mushrooms and olives."
  *                       Creator:
