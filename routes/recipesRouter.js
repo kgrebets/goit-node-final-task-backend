@@ -459,6 +459,9 @@ recipesRouter.delete(
  *                   type: string
  *                   nullable: true
  *                   example: "recipes/6462a8f74c3d0ddd28897fe3/7306eb16ad5fd41b3eaff054b6768ede2fac6a40ad36e005346e766f6463963c.webp"
+ *                 time:
+ *                   type: integer
+ *                   example: 45
  *                 Creator:
  *                   type: object
  *                   nullable: true
