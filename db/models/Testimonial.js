@@ -7,7 +7,7 @@ const Testimonial = sequelize.define("testimonial", {
     primaryKey: true,
   },
 
-  userId: {
+  userid: {
     type: DataTypes.STRING,
     allowNull: false,
   },

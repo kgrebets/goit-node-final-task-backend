@@ -41,12 +41,23 @@ const followUser = async (followerId, followingId) => {
     throw HttpError(400, "You cannot follow yourself");
   }
 
-  const follower = await getUserById(followerId);
-  const targetUser = await getUserById(followingId);
 
-  await follower.addFollowing(targetUser);
-
-  return true;
+  try {
+    const follow = await UserFollow.create({
+      followerId: followerId,
+      followingId: followingId
+    });
+    
+    console.log('Follow created in DB with ID:', follow.id);
+    return true;
+  } catch (error) {
+    console.error('Error creating follow:', error.message);
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      return true;
+    }
+    
+    throw HttpError(500, "Failed to follow user");
+  }
 };
 
 const unfollowUser = async (followerId, followingId) => {
@@ -62,7 +73,7 @@ const unfollowUser = async (followerId, followingId) => {
   return true;
 };
 
-const getUserInfo = async (userId) => {
+const getUserInfo = async (userId, currentUserId = null) => {
   const user = await User.findByPk(userId, {
     attributes: ["id", "username", "email", "avatar"],
   });
@@ -73,12 +84,35 @@ const getUserInfo = async (userId) => {
     where: { followingId: userId },
   });
 
+  const followingCount = await UserFollow.count({
+    where: { followerId: userId },
+  });
+  
+  const favoritesCount = await UserFavorite.count({
+    where: { userid: userId },
+  });
+
+  let isFollowing = false;
+  if (currentUserId) {      
+    const follow = await UserFollow.findOne({ 
+      where: {                                
+        followerId: currentUserId,            
+        followingId: userId                 
+      }                                       
+    });                                     
+    isFollowing = !!follow;                  
+  }                                          
+
   return {
+    id: user.id,
     avatar: await getSignedAvatarUrl(user),
     name: user.username,
     email: user.email,
     recipesCount,
     followersCount,
+    followingCount,
+    favoritesCount,
+    isFollowing,
   };
 };
 
