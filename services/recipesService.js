@@ -34,7 +34,7 @@ export const getRecipes = async ({
 
   const whereClause = {};
 
-  if (categoryid) whereClause.categoryid = categoryid;
+  if (categoryid && categoryid !== 'all') whereClause.categoryid = categoryid;
   if (areaid) whereClause.areaid = areaid;
 
   if (ingredientid) {

@@ -5,12 +5,14 @@ import s3Client from "../uploader/s3-client.js";
 
 /**
  * Generate S3 public avatar URL or Gravatar URL if avatar is not found
+ * If useCdn flag is used, then url is public and fetched from cloudfront on frontend
  *
  * @param user
+ * @param useCdn
  * @param signedUrlExpirationDelay
  * @returns {Promise<string>}
  */
-const getSignedAvatarUrl = async (user, signedUrlExpirationDelay = 3600) => {
+const getSignedAvatarUrl = async (user, useCdn = true, signedUrlExpirationDelay = 3600) => {
   const imageName = user.avatar;
   if (!imageName) {
     return gravatar.url(user.email, { s: '120', r: 'pg', d: 'identicon' }, true);
@@ -22,6 +24,10 @@ const getSignedAvatarUrl = async (user, signedUrlExpirationDelay = 3600) => {
   }
 
   const getCommand = new GetObjectCommand(getObjectParams);
+
+  if (useCdn) {
+    return imageName;
+  }
 
   return await getSignedUrl(s3Client, getCommand, { expiresIn: signedUrlExpirationDelay })
 }
