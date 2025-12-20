@@ -20,6 +20,7 @@ import {
   deleteRecipeSchema,
   getPopularRecipesSchema,
 } from "../schemas/recipesSchemas.js";
+import optionalAuthenticate from "../middlewares/optionalAuthenticate.js";
 
 const recipesRouter = Router();
 
@@ -36,6 +37,9 @@ const recipesRouter = Router();
  *   get:
  *     summary: Get list of recipes
  *     tags: [Recipes]
+ *     security:
+ *       - bearerAuth: []  # Option 1: User provides a token
+ *       - {} # Option 2: No authentication required
  *     parameters:
  *       - in: query
  *         name: page
@@ -109,6 +113,10 @@ const recipesRouter = Router();
  *                         type: string
  *                         nullable: true
  *                         example: "A classic French chicken dish made with sautéed chicken in a tomato and wine sauce, served with mushrooms and olives."
+ *                       isFavorite:
+ *                        type: boolean
+ *                        nullable: true
+ *                        example: "Flag whether recipe is in the user's favorites. Appears only for authenticated users."
  *                       Creator:
  *                         type: object
  *                         nullable: true
@@ -175,7 +183,7 @@ const recipesRouter = Router();
  *                   results: []
  */
 
-recipesRouter.get("/", validateQuery(getRecipesSchema), getRecipesController);
+recipesRouter.get("/", validateQuery(getRecipesSchema), optionalAuthenticate, getRecipesController);
 
 /**
  * @swagger
@@ -426,6 +434,9 @@ recipesRouter.delete(
  *   get:
  *     summary: Get recipe by ID
  *     tags: [Recipes]
+ *     security:
+ *       - bearerAuth: []  # Option 1: User provides a token
+ *       - {} # Option 2: No authentication required
  *     parameters:
  *       - in: path
  *         name: id
@@ -459,6 +470,10 @@ recipesRouter.delete(
  *                   type: string
  *                   nullable: true
  *                   example: "recipes/6462a8f74c3d0ddd28897fe3/7306eb16ad5fd41b3eaff054b6768ede2fac6a40ad36e005346e766f6463963c.webp"
+ *                 isFavorite:
+ *                   type: boolean
+ *                   nullable: true
+ *                   example: "Flag whether recipe is in the user's favorites. Appears only for authenticated users."
  *                 Creator:
  *                   type: object
  *                   nullable: true
@@ -534,6 +549,7 @@ recipesRouter.delete(
 recipesRouter.get(
   "/:id",
   validateParams(getRecipeByIdSchema),
+  optionalAuthenticate,
   getRecipeByIdController
 );
 
