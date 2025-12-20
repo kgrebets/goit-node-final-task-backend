@@ -474,6 +474,9 @@ recipesRouter.delete(
  *                   type: boolean
  *                   nullable: true
  *                   example: "Flag whether recipe is in the user's favorites. Appears only for authenticated users."
+ *                 time:
+ *                   type: integer
+ *                   example: 45
  *                 Creator:
  *                   type: object
  *                   nullable: true
