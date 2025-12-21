@@ -20,6 +20,7 @@ import {
   deleteRecipeSchema,
   getPopularRecipesSchema,
 } from "../schemas/recipesSchemas.js";
+import optionalAuthenticate from "../middlewares/optionalAuthenticate.js";
 
 const recipesRouter = Router();
 
@@ -36,6 +37,9 @@ const recipesRouter = Router();
  *   get:
  *     summary: Get list of recipes
  *     tags: [Recipes]
+ *     security:
+ *       - bearerAuth: []
+ *       - {}
  *     parameters:
  *       - in: query
  *         name: page
@@ -79,13 +83,13 @@ const recipesRouter = Router();
  *               properties:
  *                 total:
  *                   type: integer
- *                   example: 4
+ *                   example: 290
  *                 page:
  *                   type: integer
  *                   example: 1
  *                 totalPages:
  *                   type: integer
- *                   example: 1
+ *                   example: 25
  *                 results:
  *                   type: array
  *                   items:
@@ -93,10 +97,10 @@ const recipesRouter = Router();
  *                     properties:
  *                       id:
  *                         type: string
- *                         example: "6462a8f74c3d0ddd288980b8"
+ *                         example: "Lcr2qK0ukWY3o7pQRn3lf"
  *                       title:
  *                         type: string
- *                         example: "Chicken Marengo"
+ *                         example: "Integration test recipe"
  *                       time:
  *                         type: integer
  *                         description: Cooking time in minutes
@@ -104,21 +108,26 @@ const recipesRouter = Router();
  *                       thumb:
  *                         type: string
  *                         nullable: true
- *                         example: "https://ftp.goit.study/img/so-yummy/preview/Chicken%20Marengo.jpg"
+ *                         example: "https://ftp.goit.study/img/so-yummy/preview/Saltfish%20and%20Ackee.jpg"
  *                       description:
  *                         type: string
  *                         nullable: true
- *                         example: "A classic French chicken dish made with sautéed chicken in a tomato and wine sauce, served with mushrooms and olives."
+ *                         example: "Recipe created in integration test"
+ *                       isFavorite:
+ *                         type: boolean
+ *                         nullable: true
+ *                         description: Flag whether recipe is in the user's favorites. Appears only for authenticated users.
+ *                         example: false
  *                       Creator:
  *                         type: object
  *                         nullable: true
  *                         properties:
  *                           id:
  *                             type: string
- *                             example: "n-QaIbsY-Gk9Ggee4eGQ-"
+ *                             example: "zDCBgWYNelFmDgyGR7UC_"
  *                           username:
  *                             type: string
- *                             example: "Darya"
+ *                             example: "user-1765553053360"
  *                           avatar:
  *                             type: string
  *                             nullable: true
@@ -139,33 +148,33 @@ const recipesRouter = Router();
  *                         properties:
  *                           id:
  *                             type: string
- *                             example: "6462a6f04c3d0ddd28897fa3"
+ *                             example: "6462a6f04c3d0ddd28897f9b"
  *                           name:
  *                             type: string
- *                             example: "French"
+ *                             example: "Ukrainian"
  *             examples:
  *               success:
  *                 summary: Recipes found
  *                 value:
- *                   total: 4
+ *                   total: 290
  *                   page: 1
- *                   totalPages: 1
+ *                   totalPages: 25
  *                   results:
- *                     - id: "6462a8f74c3d0ddd288980b8"
- *                       title: "Chicken Marengo"
- *                       time: 45
- *                       thumb: "https://ftp.goit.study/img/so-yummy/preview/Chicken%20Marengo.jpg"
- *                       description: "A classic French chicken dish made with sautéed chicken in a tomato and wine sauce, served with mushrooms and olives."
+ *                     - id: "Lcr2qK0ukWY3o7pQRn3lf"
+ *                       title: "Integration test recipe"
+ *                       thumb: "https://ftp.goit.study/img/so-yummy/preview/Saltfish%20and%20Ackee.jpg"
+ *                       description: "Recipe created in integration test"
+ *                       isFavorite: false
  *                       Creator:
- *                         id: "n-QaIbsY-Gk9Ggee4eGQ-"
- *                         username: "Darya"
+ *                         id: "zDCBgWYNelFmDgyGR7UC_"
+ *                         username: "user-1765553053360"
  *                         avatar: null
  *                       category:
  *                         id: "6462a6cd4c3d0ddd28897f8d"
  *                         name: "Chicken"
  *                       area:
- *                         id: "6462a6f04c3d0ddd28897fa3"
- *                         name: "French"
+ *                         id: "6462a6f04c3d0ddd28897f9b"
+ *                         name: "Ukrainian"
  *               empty:
  *                 summary: No recipes match the filters
  *                 value:
@@ -175,7 +184,12 @@ const recipesRouter = Router();
  *                   results: []
  */
 
-recipesRouter.get("/", validateQuery(getRecipesSchema), getRecipesController);
+recipesRouter.get(
+  "/",
+  validateQuery(getRecipesSchema),
+  optionalAuthenticate,
+  getRecipesController
+);
 
 /**
  * @swagger
@@ -183,6 +197,9 @@ recipesRouter.get("/", validateQuery(getRecipesSchema), getRecipesController);
  *   get:
  *     summary: Get popular recipes (most favorited)
  *     tags: [Recipes]
+ *     security:
+ *       - bearerAuth: []
+ *       - {}
  *     parameters:
  *       - in: query
  *         name: page
@@ -210,18 +227,23 @@ recipesRouter.get("/", validateQuery(getRecipesSchema), getRecipesController);
  *                 properties:
  *                   id:
  *                     type: string
- *                     example: "6462a8f74c3d0ddd28897fe0"
+ *                     example: "6462a8f74c3d0ddd28897fe6"
  *                   title:
  *                     type: string
- *                     example: "Ribollita"
+ *                     example: "Recheado Masala Fish"
  *                   thumb:
  *                     type: string
  *                     nullable: true
- *                     example: "https://ftp.goit.study/img/so-yummy/preview/Ribollita.jpg"
+ *                     example: "https://ftp.goit.study/img/so-yummy/preview/Recheado%20Masala%20Fish.jpg"
  *                   description:
  *                     type: string
  *                     nullable: true
- *                     example: "A Tuscan soup made with vegetables, bread, and beans, often served as a hearty main dish."
+ *                     example: "A Goan specialty of fish marinated with a spicy masala paste and fried or grilled to perfection."
+ *                   isFavorite:
+ *                     type: boolean
+ *                     nullable: true
+ *                     description: Flag whether recipe is in the user's favorites. Appears only for authenticated users.
+ *                     example: false
  *                   Creator:
  *                     type: object
  *                     nullable: true
@@ -243,24 +265,26 @@ recipesRouter.get("/", validateQuery(getRecipesSchema), getRecipesController);
  *               success:
  *                 summary: Popular recipes
  *                 value:
- *                   - id: "6462a8f74c3d0ddd28897fe0"
- *                     title: "Ribollita"
- *                     thumb: "https://ftp.goit.study/img/so-yummy/preview/Ribollita.jpg"
- *                     description: "A Tuscan soup made with vegetables, bread, and beans, often served as a hearty main dish."
+ *                   - id: "6462a8f74c3d0ddd28897fe6"
+ *                     title: "Recheado Masala Fish"
+ *                     thumb: "https://ftp.goit.study/img/so-yummy/preview/Recheado%20Masala%20Fish.jpg"
+ *                     description: "A Goan specialty of fish marinated with a spicy masala paste and fried or grilled to perfection."
+ *                     isFavorite: false
  *                     Creator:
  *                       id: "n-QaIbsY-Gk9Ggee4eGQ-"
  *                       username: "Darya"
  *                       avatar: null
  *                     favoritesCount: 1
- *                   - id: "6462a8f74c3d0ddd28897fe3"
- *                     title: "Full English Breakfast"
- *                     thumb: "recipes/6462a8f74c3d0ddd28897fe3/7306eb16ad5fd41b3eaff054b6768ede2fac6a40ad36e005346e766f6463963c.webp"
- *                     description: "Similar to the English Breakfast, but with additional items like black pudding, fried mushrooms, and hash browns. It is a more substantial breakfast meal."
+ *                   - id: "6462a8f74c3d0ddd28897fe8"
+ *                     title: "Katsu Chicken curry"
+ *                     thumb: "https://ftp.goit.study/img/so-yummy/preview/Katsu%20Chicken%20curry.jpg"
+ *                     description: "Japanese-style curry with breaded chicken"
+ *                     isFavorite: true
  *                     Creator:
- *                       id: "wh8ghsPfXj_QSIowtir9_"
- *                       username: "johndoe"
+ *                       id: "n-QaIbsY-Gk9Ggee4eGQ-"
+ *                       username: "Darya"
  *                       avatar: null
- *                     favoritesCount: 1
+ *                     favoritesCount: 2
  *               empty:
  *                 summary: No popular recipes yet
  *                 value: []
@@ -269,6 +293,7 @@ recipesRouter.get("/", validateQuery(getRecipesSchema), getRecipesController);
 recipesRouter.get(
   "/popular",
   validateQuery(getPopularRecipesSchema),
+  optionalAuthenticate,
   getPopularRecipesController
 );
 
@@ -426,13 +451,16 @@ recipesRouter.delete(
  *   get:
  *     summary: Get recipe by ID
  *     tags: [Recipes]
+ *     security:
+ *       - bearerAuth: []
+ *       - {}
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: string
- *           example: "6462a8f74c3d0ddd28897fe3"
+ *           example: "6462a8f74c3d0ddd288980d1"
  *         description: Recipe ID
  *     responses:
  *       200:
@@ -444,34 +472,39 @@ recipesRouter.delete(
  *               properties:
  *                 id:
  *                   type: string
- *                   example: "6462a8f74c3d0ddd28897fe3"
+ *                   example: "6462a8f74c3d0ddd288980d1"
  *                 title:
  *                   type: string
- *                   example: "Full English Breakfast"
+ *                   example: "Shakshuka"
+ *                 time:
+ *                   type: integer
+ *                   example: 25
  *                 description:
  *                   type: string
  *                   nullable: true
- *                   example: "Similar to the English Breakfast, but with additional items like black pudding, fried mushrooms, and hash browns. It is a more substantial breakfast meal."
+ *                   example: "A popular Middle Eastern dish with eggs poached in a spicy tomato sauce..."
  *                 instructions:
  *                   type: string
- *                   example: "Heat the flat grill plate over a low heat..."
+ *                   example: "Heat the oil in a frying pan that has a lid..."
  *                 thumb:
  *                   type: string
  *                   nullable: true
- *                   example: "recipes/6462a8f74c3d0ddd28897fe3/7306eb16ad5fd41b3eaff054b6768ede2fac6a40ad36e005346e766f6463963c.webp"
- *                 time:
- *                   type: integer
- *                   example: 45
+ *                   example: "https://ftp.goit.study/img/so-yummy/preview/Shakshuka.jpg"
+ *                 isFavorite:
+ *                   type: boolean
+ *                   nullable: true
+ *                   description: Flag whether recipe is in the user's favorites. Appears only for authenticated users.
+ *                   example: true
  *                 Creator:
  *                   type: object
  *                   nullable: true
  *                   properties:
  *                     id:
  *                       type: string
- *                       example: "wh8ghsPfXj_QSIowtir9_"
+ *                       example: "n-QaIbsY-Gk9Ggee4eGQ-"
  *                     username:
  *                       type: string
- *                       example: "johndoe"
+ *                       example: "Darya"
  *                     avatar:
  *                       type: string
  *                       nullable: true
@@ -482,20 +515,20 @@ recipesRouter.delete(
  *                   properties:
  *                     id:
  *                       type: string
- *                       example: "6462a6cd4c3d0ddd28897f95"
+ *                       example: "6462a6cd4c3d0ddd28897f92"
  *                     name:
  *                       type: string
- *                       example: "Breakfast"
+ *                       example: "Vegetarian"
  *                 area:
  *                   type: object
  *                   nullable: true
  *                   properties:
  *                     id:
  *                       type: string
- *                       example: "6462a6f04c3d0ddd28897fa1"
+ *                       example: "6462a6f04c3d0ddd28897fb1"
  *                     name:
  *                       type: string
- *                       example: "British"
+ *                       example: "Egyptian"
  *                 recipeIngredients:
  *                   type: array
  *                   items:
@@ -504,24 +537,52 @@ recipesRouter.delete(
  *                       measure:
  *                         type: string
  *                         nullable: true
- *                         example: "4"
+ *                         example: "1 tbs"
  *                       ingredient:
  *                         type: object
  *                         properties:
  *                           id:
  *                             type: string
- *                             example: "640c2dd963a319ea671e3664"
+ *                             example: "640c2dd963a319ea671e372c"
  *                           name:
  *                             type: string
- *                             example: "Bacon"
+ *                             example: "Olive Oil"
  *                           img:
  *                             type: string
  *                             nullable: true
- *                             example: "https://ftp.goit.study/img/so-yummy/ingredients/640c2dd963a319ea671e3664.png"
+ *                             example: "https://ftp.goit.study/img/so-yummy/ingredients/640c2dd963a319ea671e372c.png"
  *                           description:
  *                             type: string
  *                             nullable: true
- *                             example: "Bacon is a type of salt-cured pork..."
+ *                             example: "A type of oil made from pressing whole olives..."
+ *             examples:
+ *               success:
+ *                 summary: Recipe details
+ *                 value:
+ *                   id: "6462a8f74c3d0ddd288980d1"
+ *                   title: "Shakshuka"
+ *                   time: 25
+ *                   description: "A popular Middle Eastern dish with eggs poached in a spicy tomato sauce..."
+ *                   instructions: "Heat the oil in a frying pan that has a lid..."
+ *                   thumb: "https://ftp.goit.study/img/so-yummy/preview/Shakshuka.jpg"
+ *                   isFavorite: true
+ *                   Creator:
+ *                     id: "n-QaIbsY-Gk9Ggee4eGQ-"
+ *                     username: "Darya"
+ *                     avatar: null
+ *                   category:
+ *                     id: "6462a6cd4c3d0ddd28897f92"
+ *                     name: "Vegetarian"
+ *                   area:
+ *                     id: "6462a6f04c3d0ddd28897fb1"
+ *                     name: "Egyptian"
+ *                   recipeIngredients:
+ *                     - measure: "1 tbs"
+ *                       ingredient:
+ *                         id: "640c2dd963a319ea671e372c"
+ *                         name: "Olive Oil"
+ *                         img: "https://ftp.goit.study/img/so-yummy/ingredients/640c2dd963a319ea671e372c.png"
+ *                         description: "A type of oil made from pressing whole olives..."
  *       404:
  *         description: Recipe not found
  *         content:
@@ -537,6 +598,7 @@ recipesRouter.delete(
 recipesRouter.get(
   "/:id",
   validateParams(getRecipeByIdSchema),
+  optionalAuthenticate,
   getRecipeByIdController
 );
 

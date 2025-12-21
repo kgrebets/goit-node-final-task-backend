@@ -27,6 +27,7 @@ export const getRecipes = async ({
   categoryid,
   areaid,
   ingredientid,
+  userId,
 }) => {
   const pageNumber = Number(page) || 1;
   const pageSize = Number(limit) || 12;
@@ -34,7 +35,7 @@ export const getRecipes = async ({
 
   const whereClause = {};
 
-  if (categoryid && categoryid !== 'all') whereClause.categoryid = categoryid;
+  if (categoryid && categoryid !== "all") whereClause.categoryid = categoryid;
   if (areaid) whereClause.areaid = areaid;
 
   if (ingredientid) {
@@ -47,9 +48,23 @@ export const getRecipes = async ({
     whereClause.id = { [Op.in]: recipeIds };
   }
 
+  const attributes = ["id", "title", "thumb", "description"];
+
+  if (userId) {
+    attributes.push([
+      sequelize.literal(
+        `EXISTS(SELECT 1 FROM user_favorites WHERE recipeid = recipe.id AND userid = :userid)`
+      ),
+      "isFavorite",
+    ]);
+  }
+
   const { rows, count } = await Recipe.findAndCountAll({
     where: whereClause,
-    attributes: ["id", "title", "thumb", "description"],
+    attributes,
+    replacements: {
+      userid: userId || 0,
+    },
     include: [
       { model: User, as: "Creator", attributes: ["id", "username", "avatar"] },
       { model: Category, as: "category", attributes: ["id", "name"] },
@@ -68,9 +83,27 @@ export const getRecipes = async ({
   };
 };
 
-export const getRecipeById = async (id) => {
+export const getRecipeById = async (id, userId) => {
+  const attributes = [
+    "id",
+    "title",
+    "time",
+    "description",
+    "instructions",
+    "thumb",
+  ];
+
+  if (userId) {
+    attributes.push([
+      sequelize.literal(
+        `EXISTS(SELECT 1 FROM user_favorites WHERE recipeid = :recipeid AND userid = :userid)`
+      ),
+      "isFavorite",
+    ]);
+  }
   const recipe = await Recipe.findByPk(id, {
-    attributes: ["id", "title", "time", "description", "instructions", "thumb"],
+    attributes,
+    replacements: { recipeid: id, userid: userId || 0 },
     include: [
       { model: User, as: "Creator", attributes: ["id", "username", "avatar"] },
       { model: Category, as: "category", attributes: ["id", "name"] },
@@ -93,7 +126,7 @@ export const getRecipeById = async (id) => {
   return recipe;
 };
 
-export const getPopularRecipes = async ({ page, limit }) => {
+export const getPopularRecipes = async ({ page, limit }, userId) => {
   page = Number(page) || 1;
   limit = Number(limit) || 4;
   const offset = (page - 1) * limit;
@@ -112,9 +145,27 @@ export const getPopularRecipes = async ({ page, limit }) => {
 
   const recipeIds = popular.map((p) => p.recipeid);
 
+  if (recipeIds.length === 0) {
+    return [];
+  }
+
+  const attributes = ["id", "title", "thumb", "description"];
+
+  if (userId) {
+    attributes.push([
+      sequelize.literal(
+        `EXISTS(SELECT 1 FROM user_favorites WHERE recipeid = recipe.id AND userid = :userid)`
+      ),
+      "isFavorite",
+    ]);
+  }
+
   const recipes = await Recipe.findAll({
     where: { id: { [Op.in]: recipeIds } },
-    attributes: ["id", "title", "thumb", "description"],
+    attributes,
+    replacements: {
+      userid: userId || 0,
+    },
     include: [
       {
         model: User,

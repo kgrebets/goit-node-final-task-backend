@@ -3,6 +3,7 @@ import * as recipesService from "../services/recipesService.js";
 
 export const getRecipesController = async (req, res) => {
   const { page, limit, categoryid, areaid, ingredientid } = req.query;
+  const userId = req?.user?.id;
 
   const {
     recipes,
@@ -15,6 +16,7 @@ export const getRecipesController = async (req, res) => {
     categoryid,
     areaid,
     ingredientid,
+    userId,
   });
 
   res.json({
@@ -27,8 +29,9 @@ export const getRecipesController = async (req, res) => {
 
 export const getRecipeByIdController = async (req, res) => {
   const { id } = req.params;
+  const userId = req.user?.id;
 
-  const recipe = await recipesService.getRecipeById(id);
+  const recipe = await recipesService.getRecipeById(id, userId);
 
   if (!recipe) {
     throw HttpError(404, "Recipe not found");
@@ -38,7 +41,9 @@ export const getRecipeByIdController = async (req, res) => {
 
 export const getPopularRecipesController = async (req, res, next) => {
   const { page, limit } = req.query;
-  const data = await recipesService.getPopularRecipes({ page, limit });
+  const userId = req.user?.id;
+
+  const data = await recipesService.getPopularRecipes({ page, limit }, userId);
   res.json(data);
 };
 

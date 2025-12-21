@@ -19,6 +19,11 @@
  *           type: string
  *           nullable: true
  *           example: "A Tuscan soup made with vegetables, bread, and beans, often served as a hearty main dish."
+ *         isFavorite:
+ *           type: boolean
+ *           nullable: true
+ *           description: Flag whether recipe is in the user's favorites. Appears only for authenticated users.
+ *           example: false
  *         Creator:
  *           type: object
  *           nullable: true
@@ -68,30 +73,29 @@
  *         id:
  *           type: string
  *           example: "6462a8f74c3d0ddd28897fe3"
- *
  *         title:
  *           type: string
  *           example: "Full English Breakfast"
- *
  *         time:
  *           type: integer
  *           description: Cooking time in minutes
  *           example: 30
- *
  *         description:
  *           type: string
  *           nullable: true
  *           example: "Similar to the English Breakfast, but with additional items like black pudding..."
- *
  *         instructions:
  *           type: string
  *           example: "Heat the flat grill plate over a low heat..."
- *
  *         thumb:
  *           type: string
  *           nullable: true
  *           example: "recipes/6462a8f74c3d0ddd28897fe3/image.webp"
- *
+ *         isFavorite:
+ *           type: boolean
+ *           nullable: true
+ *           description: Flag whether recipe is in the user's favorites. Appears only for authenticated users.
+ *           example: true
  *         Creator:
  *           type: object
  *           nullable: true
@@ -106,7 +110,6 @@
  *               type: string
  *               nullable: true
  *               example: null
- *
  *         category:
  *           type: object
  *           nullable: true
@@ -117,7 +120,6 @@
  *             name:
  *               type: string
  *               example: "Breakfast"
- *
  *         area:
  *           type: object
  *           nullable: true
@@ -128,7 +130,6 @@
  *             name:
  *               type: string
  *               example: "British"
- *
  *         recipeIngredients:
  *           type: array
  *           items:
@@ -151,6 +152,11 @@
  *           type: string
  *           nullable: true
  *           example: "A classic French chicken dish made with sautéed chicken in a tomato and wine sauce..."
+ *         isFavorite:
+ *           type: boolean
+ *           nullable: true
+ *           description: Flag whether recipe is in the user's favorites. Appears only for authenticated users.
+ *           example: false
  *         Creator:
  *           type: object
  *           nullable: true
