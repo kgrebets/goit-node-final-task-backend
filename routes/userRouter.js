@@ -10,7 +10,7 @@ import {
   getCurrentUserController,
   getLoggedInUserRecipesController,
   getUserRecipesController,
-  updateCurrentUserAvatar
+  updateCurrentUserAvatar,
 } from "../controllers/usersController.js";
 import { getUserRecipesSchema } from "../schemas/recipesSchemas.js";
 import validateQuery from "../helpers/validateQuery.js";
@@ -102,7 +102,12 @@ userRouter.get("/me", authenticate, getCurrentUserController);
  *       404:
  *         description: User not found
  */
-userRouter.post("/me/avatar", authenticate, upload.single("avatar"), updateCurrentUserAvatar);
+userRouter.post(
+  "/me/avatar",
+  authenticate,
+  upload.single("avatar"),
+  updateCurrentUserAvatar
+);
 
 /**
  * @swagger
@@ -410,8 +415,11 @@ userRouter.delete("/:userId/followers", authenticate, unfollowUserController);
  *             schema:
  *               type: object
  *               properties:
+ *                 id:
+ *                   type: string
  *                 avatar:
  *                   type: string
+ *                   nullable: true
  *                 name:
  *                   type: string
  *                 email:
@@ -420,6 +428,12 @@ userRouter.delete("/:userId/followers", authenticate, unfollowUserController);
  *                   type: integer
  *                 followersCount:
  *                   type: integer
+ *                 followingCount:
+ *                   type: integer
+ *                 favoritesCount:
+ *                   type: integer
+ *                 isFollowing:
+ *                   type: boolean
  *       401:
  *         description: Unauthorized
  *       404:
