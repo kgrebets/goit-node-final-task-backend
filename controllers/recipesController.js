@@ -16,7 +16,7 @@ export const getRecipesController = async (req, res) => {
     categoryid,
     areaid,
     ingredientid,
-    userId
+    userId,
   });
 
   res.json({
@@ -41,7 +41,9 @@ export const getRecipeByIdController = async (req, res) => {
 
 export const getPopularRecipesController = async (req, res, next) => {
   const { page, limit } = req.query;
-  const data = await recipesService.getPopularRecipes({ page, limit });
+  const userId = req.user?.id;
+
+  const data = await recipesService.getPopularRecipes({ page, limit }, userId);
   res.json(data);
 };
 
