@@ -1,3 +1,4 @@
+import { Sequelize } from "sequelize";
 import User from "../db/models/User.js";
 import Recipe from "../db/models/Recipe.js";
 import UserFollow from "../db/models/UserFollow.js";
@@ -20,20 +21,73 @@ const getUserById = async (id) => {
 
 const getFollowers = async (userId) => {
   const user = await getUserById(userId);
+
   const followers = await user.getFollowers({
-    attributes: ["id", "email", "username", "avatar"],
-    order: [["id", "ASC"]],
+    attributes: [
+      "id",
+      "email",
+      "username",
+      "avatar",
+      [Sequelize.fn("COUNT", Sequelize.col("Recipes.id")), "totalRecipes"],
+    ],
+    include: [
+      {
+        model: Recipe,
+        as: "Recipes",
+        attributes: [],
+        required: false,
+      },
+    ],
+    through: {
+      as: "user_follow",
+      attributes: ["id", "followerId", "followingId", "createdAt", "updatedAt"],
+    },
+    group: ["user.id", "user_follow.id"],
+    order: [[Sequelize.col("user.id"), "ASC"]],
+    subQuery: false,
   });
-  return followers;
+
+  return followers.map((u) => {
+    const obj = u.toJSON();
+    obj.totalRecipes = Number(obj.totalRecipes || 0);
+    return obj;
+  });
 };
 
 const getFollowing = async (userId) => {
   const user = await getUserById(userId);
+
   const following = await user.getFollowing({
-    attributes: ["id", "email", "username", "avatar"],
+    attributes: [
+      "id",
+      "email",
+      "username",
+      "avatar",
+      [
+        User.sequelize.fn("COUNT", User.sequelize.col("Recipes.id")),
+        "totalRecipes",
+      ],
+    ],
+    include: [
+      {
+        model: Recipe,
+        as: "Recipes",
+        attributes: [],
+        required: false,
+      },
+    ],
+    through: {
+      as: "user_follow",
+      attributes: ["id", "followerId", "followingId", "createdAt", "updatedAt"],
+    },
+    group: ["user.id", "user_follow.id"],
     order: [["id", "ASC"]],
   });
-  return following;
+
+  return following.map((u) => {
+    const json = u.toJSON();
+    return { ...json, totalRecipes: Number(json.totalRecipes || 0) };
+  });
 };
 
 const followUser = async (followerId, followingId) => {
@@ -41,21 +95,20 @@ const followUser = async (followerId, followingId) => {
     throw HttpError(400, "You cannot follow yourself");
   }
 
-
   try {
     const follow = await UserFollow.create({
       followerId: followerId,
-      followingId: followingId
+      followingId: followingId,
     });
-    
-    console.log('Follow created in DB with ID:', follow.id);
+
+    console.log("Follow created in DB with ID:", follow.id);
     return true;
   } catch (error) {
-    console.error('Error creating follow:', error.message);
-    if (error.name === 'SequelizeUniqueConstraintError') {
+    console.error("Error creating follow:", error.message);
+    if (error.name === "SequelizeUniqueConstraintError") {
       return true;
     }
-    
+
     throw HttpError(500, "Failed to follow user");
   }
 };
@@ -87,21 +140,21 @@ const getUserInfo = async (userId, currentUserId = null) => {
   const followingCount = await UserFollow.count({
     where: { followerId: userId },
   });
-  
+
   const favoritesCount = await UserFavorite.count({
     where: { userid: userId },
   });
 
   let isFollowing = false;
-  if (currentUserId) {      
-    const follow = await UserFollow.findOne({ 
-      where: {                                
-        followerId: currentUserId,            
-        followingId: userId                 
-      }                                       
-    });                                     
-    isFollowing = !!follow;                  
-  }                                          
+  if (currentUserId) {
+    const follow = await UserFollow.findOne({
+      where: {
+        followerId: currentUserId,
+        followingId: userId,
+      },
+    });
+    isFollowing = !!follow;
+  }
 
   return {
     id: user.id,
@@ -171,19 +224,20 @@ const getUserRecipes = async (userId, page, limit) => {
     total: count,
     page: pageNumber,
     totalPages: Math.ceil(count / pageSize),
-    recipes: rows,
+    results: rows,
   };
 };
 
 const updateCurrentUserAvatar = async (avatar, userId) => {
   const user = await getUserById(userId);
   // If user.avatar exists, then we should update existing (the same name replaces existing on bucket) otherwise create a new avatar
-  const imageName = user.avatar ?? `${USER_AVATARS_S3_BUCKET_FOLDER}/${userId}/${randomImageName()}`;
+  const imageName =
+    user.avatar ??
+    `${USER_AVATARS_S3_BUCKET_FOLDER}/${userId}/${randomImageName()}`;
   const imageBuffer = await sharp(avatar.buffer)
-    .resize({ width: 120, height: 120, fit: 'cover' })
-    .toFormat('webp', { quality: 80 })
+    .resize({ width: 120, height: 120, fit: "cover" })
+    .toFormat("webp", { quality: 80 })
     .toBuffer();
-
 
   const params = {
     Bucket: process.env.AWS_BUCKET_NAME,
@@ -198,9 +252,9 @@ const updateCurrentUserAvatar = async (avatar, userId) => {
   const userInfo = await user.update({ avatar: imageName });
 
   return {
-    avatar: await getSignedAvatarUrl(userInfo)
+    avatar: await getSignedAvatarUrl(userInfo),
   };
-}
+};
 
 export default {
   getFollowers,
@@ -210,5 +264,5 @@ export default {
   getUserInfo,
   getCurrentUserInfo,
   getUserRecipes,
-  updateCurrentUserAvatar
+  updateCurrentUserAvatar,
 };

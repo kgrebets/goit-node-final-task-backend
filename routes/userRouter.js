@@ -189,19 +189,13 @@ userRouter.get(
  * /api/users/following:
  *   get:
  *     summary: Get users that the current user is following
+ *     description: Returns a list of users the authenticated user follows, including total recipes count for each user
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: userId
- *         required: true
- *         schema:
- *           type: string
- *         description: ID of the user whose followers are requested
  *     responses:
  *       200:
- *         description: List of users the current user follows
+ *         description: List of followed users
  *         content:
  *           application/json:
  *             schema:
@@ -211,12 +205,40 @@ userRouter.get(
  *                 properties:
  *                   id:
  *                     type: string
+ *                     example: "n-QaIbsY-Gk9Ggee4eGQ-"
  *                   email:
  *                     type: string
+ *                     example: "darya@example.com"
  *                   username:
  *                     type: string
+ *                     example: "Darya"
  *                   avatar:
  *                     type: string
+ *                     nullable: true
+ *                     example: "avatars/n-QaIbsY-Gk9Ggee4eGQ-/429ca09e..."
+ *                   totalRecipes:
+ *                     type: integer
+ *                     example: 184
+ *                   user_follow:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                         example: 226
+ *                       followerId:
+ *                         type: string
+ *                         example: "xDxOw291qLnEV4Sdu_gnc"
+ *                       followingId:
+ *                         type: string
+ *                         example: "n-QaIbsY-Gk9Ggee4eGQ-"
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                         example: "2025-12-21T22:57:50.925Z"
+ *                       updatedAt:
+ *                         type: string
+ *                         format: date-time
+ *                         example: "2025-12-21T22:57:50.925Z"
  *       401:
  *         description: Unauthorized
  */
@@ -302,6 +324,7 @@ userRouter.get(
  * /api/users/{userId}/followers:
  *   get:
  *     summary: Get followers of a user
+ *     description: Returns a list of users who follow the specified user, including total recipes count for each follower
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -324,12 +347,40 @@ userRouter.get(
  *                 properties:
  *                   id:
  *                     type: string
+ *                     example: "n-QaIbsY-Gk9Ggee4eGQ-"
  *                   email:
  *                     type: string
+ *                     example: "darya@example.com"
  *                   username:
  *                     type: string
+ *                     example: "Darya"
  *                   avatar:
  *                     type: string
+ *                     nullable: true
+ *                     example: "avatars/n-QaIbsY-Gk9Ggee4eGQ-/429ca09e..."
+ *                   totalRecipes:
+ *                     type: integer
+ *                     example: 184
+ *                   user_follow:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                         example: 230
+ *                       followerId:
+ *                         type: string
+ *                         example: "n-QaIbsY-Gk9Ggee4eGQ-"
+ *                       followingId:
+ *                         type: string
+ *                         example: "xDxOw291qLnEV4Sdu_gnc"
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                         example: "2025-12-22T05:52:30.987Z"
+ *                       updatedAt:
+ *                         type: string
+ *                         format: date-time
+ *                         example: "2025-12-22T05:52:30.987Z"
  *       401:
  *         description: Unauthorized
  *       404:
