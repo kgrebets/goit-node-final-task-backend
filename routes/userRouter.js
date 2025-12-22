@@ -195,7 +195,7 @@ userRouter.get(
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: List of followed users
+ *         description: List of users the current user follows
  *         content:
  *           application/json:
  *             schema:
