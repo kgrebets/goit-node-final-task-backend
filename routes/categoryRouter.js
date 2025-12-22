@@ -25,13 +25,21 @@ const categoryRouter = Router();
  *               type: array
  *               items:
  *                 type: object
+ *                 required:
+ *                   - id
+ *                   - name
  *                 properties:
  *                   id:
- *                     type: integer
- *                     example: 1
+ *                     type: string
+ *                     description: Category unique identifier (ObjectId-like)
+ *                     example: "6462a6cd4c3d0ddd28897f8e"
  *                   name:
  *                     type: string
  *                     example: "Beef"
+ *                   description:
+ *                     type: string
+ *                     nullable: true
+ *                     example: "Rich, bold, and perfectly composed—indulgent recipes that celebrate depth of flavor and timeless culinary confidence."
  */
 
 categoryRouter.get("/", categoryController.getAllCategories);

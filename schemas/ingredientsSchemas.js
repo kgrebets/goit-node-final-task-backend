@@ -6,3 +6,12 @@ export const getIngredientsSchema = Joi.object({
   name: Joi.string().optional(),
 });
 
+export const ingredientSchema = Joi.object({
+  id: Joi.string().trim().required(),
+  measure: Joi.string().trim().min(1).required(),
+});
+
+export const ingredientsArraySchema = Joi.array()
+  .min(1)
+  .items(ingredientSchema)
+  .required();
