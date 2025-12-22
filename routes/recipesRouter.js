@@ -1,4 +1,5 @@
 import { Router } from "express";
+import upload from "../middlewares/upload.js";
 import validateParams from "../helpers/validateParams.js";
 import validateQuery from "../helpers/validateQuery.js";
 import validateBody from "../helpers/validateBody.js";
@@ -16,7 +17,7 @@ import {
 import {
   getRecipesSchema,
   getRecipeByIdSchema,
-  createRecipeSchema,
+  createRecipeBodySchema,
   deleteRecipeSchema,
   getPopularRecipesSchema,
 } from "../schemas/recipesSchemas.js";
@@ -613,50 +614,50 @@ recipesRouter.get(
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required:
  *               - title
  *               - categoryid
+ *               - areaid
  *               - instructions
+ *               - description
  *               - time
  *               - ingredients
+ *               - thumb
  *             properties:
  *               title:
  *                 type: string
- *                 example: "My sweet recipe"
+ *                 example: "Valeriia Recipe"
  *               categoryid:
  *                 type: string
+ *                 description: Category id
  *                 example: "6462a6cd4c3d0ddd28897f8d"
  *               areaid:
  *                 type: string
+ *                 description: Area id
  *                 example: "6462a6f04c3d0ddd28897f9b"
  *               instructions:
  *                 type: string
- *                 example: "Mix everything and cook"
+ *                 example: "Mix and cook"
  *               description:
  *                 type: string
- *                 example: "YOu won't believe how sweet this is!"
+ *                 example: "Test Description"
+ *               time:
+ *                 oneOf:
+ *                   - type: integer
+ *                     example: 10
+ *                   - type: string
+ *                     example: "10"
+ *               ingredients:
+ *                 type: string
+ *                 description: JSON string of ingredients array (because multipart/form-data)
+ *                 example: '[{"id":"640c2dd963a319ea671e367e","measure":"200 g"}]'
  *               thumb:
  *                 type: string
- *                 example: "https://ftp.goit.study/img/so-yummy/preview/Saltfish%20and%20Ackee.jpg"
- *               time:
- *                 type: integer
- *                 example: 45
- *               ingredients:
- *                 type: array
- *                 items:
- *                   type: object
- *                   required:
- *                     - id
- *                   properties:
- *                     id:
- *                       type: string
- *                       example: "640c2dd963a319ea671e367e"
- *                     measure:
- *                       type: string
- *                       example: "333 g"
+ *                 format: binary
+ *                 description: Recipe image file
  *     responses:
  *       201:
  *         description: Recipe created successfully
@@ -664,53 +665,111 @@ recipesRouter.get(
  *           application/json:
  *             schema:
  *               type: object
+ *               required:
+ *                 - id
+ *                 - title
+ *                 - time
+ *                 - description
+ *                 - instructions
+ *                 - thumb
+ *                 - isFavorite
+ *                 - Creator
+ *                 - category
+ *                 - area
+ *                 - recipeIngredients
  *               properties:
  *                 id:
  *                   type: string
+ *                   example: "tEP12db2hCtYSmRYpKufN"
  *                 title:
  *                   type: string
- *                 categoryid:
- *                   type: string
- *                 userid:
- *                   type: string
- *                 areaid:
- *                   type: string
- *                 instructions:
- *                   type: string
- *                 description:
- *                   type: string
- *                 thumb:
- *                   type: string
+ *                   example: "Valeriia Recipe"
  *                 time:
  *                   type: integer
+ *                   example: 10
+ *                 description:
+ *                   type: string
+ *                   example: "Test Description"
+ *                 instructions:
+ *                   type: string
+ *                   example: "Mix and cook"
+ *                 thumb:
+ *                   type: string
+ *                   example: "recipes/tEP12db2hCtYSmRYpKufN/mock-thumb.webp"
+ *                 isFavorite:
+ *                   type: boolean
+ *                   example: false
+ *                 Creator:
+ *                   type: object
+ *                   required: [id, username, avatar]
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: "X4Tb2ICHsduumTIRpcpcB"
+ *                     username:
+ *                       type: string
+ *                       example: "Valeriia"
+ *                     avatar:
+ *                       type: string
+ *                       example: "avatars/X4Tb2ICHsduumTIRpcpcB/72e649f0ff7e5cde05d1b6c2635fa0fe1415af2998aa79b64b7380516f5b6d6f"
+ *                 category:
+ *                   type: object
+ *                   required: [id, name]
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: "6462a6cd4c3d0ddd28897f8d"
+ *                     name:
+ *                       type: string
+ *                       example: "Chicken"
+ *                 area:
+ *                   type: object
+ *                   required: [id, name]
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: "6462a6f04c3d0ddd28897f9b"
+ *                     name:
+ *                       type: string
+ *                       example: "Ukrainian"
  *                 recipeIngredients:
  *                   type: array
  *                   items:
  *                     type: object
+ *                     required: [measure, ingredient]
  *                     properties:
  *                       measure:
  *                         type: string
+ *                         example: "200 g"
  *                       ingredient:
  *                         type: object
+ *                         required: [id, name, img, description]
  *                         properties:
  *                           id:
  *                             type: string
+ *                             example: "640c2dd963a319ea671e367e"
  *                           name:
  *                             type: string
+ *                             example: "Butter"
  *                           img:
  *                             type: string
+ *                             example: "https://ftp.goit.study/img/so-yummy/ingredients/640c2dd963a319ea671e367e.png"
  *                           description:
  *                             type: string
+ *                             example: "A dairy product made from churning cream or milk, with a high fat content and a creamy, rich flavor that is often used in cooking and baking."
  *       400:
  *         description: Validation error
  *       401:
  *         description: Unauthorized
+ *       500:
+ *         description: Server error
  */
 
 recipesRouter.post(
   "/",
   authenticate,
-  validateBody(createRecipeSchema),
+  upload.single("thumb"),
+  validateBody(createRecipeBodySchema),
   createRecipeController
 );
 

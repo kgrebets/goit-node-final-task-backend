@@ -17,23 +17,14 @@ export const getPopularRecipesSchema = Joi.object({
   limit: Joi.number().integer().min(1).default(4),
 });
 
-export const createRecipeSchema = Joi.object({
-  title: Joi.string().required(),
+export const createRecipeBodySchema = Joi.object({
+  title: Joi.string().trim().min(1).required(),
   categoryid: Joi.string().required(),
-  areaid: Joi.string().optional().allow(null, ""),
-  instructions: Joi.string().required(),
-  description: Joi.string().optional().allow(null, ""),
-  thumb: Joi.string().uri().optional().allow(null, ""),
+  areaid: Joi.string().required(),
+  instructions: Joi.string().min(1).required(),
+  description: Joi.string().required(),
   time: Joi.alternatives().try(Joi.string(), Joi.number()).required(),
-  ingredients: Joi.array()
-    .min(1)
-    .items(
-      Joi.object({
-        id: Joi.string().required(),
-        measure: Joi.string().required(),
-      })
-    )
-    .required(),
+  ingredients: Joi.string().required(),
 });
 
 export const deleteRecipeSchema = Joi.object({

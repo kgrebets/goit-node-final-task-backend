@@ -47,13 +47,18 @@ export const getPopularRecipesController = async (req, res, next) => {
   res.json(data);
 };
 
-export const createRecipeController = async (req, res) => {
-  const recipeData = req.body;
-  const userId = req.user.id;
+export const createRecipeController = async (req, res, next) => {
+  try {
+    const recipe = await recipesService.createRecipe(
+      req.body,
+      req.user.id,
+      req.file
+    );
 
-  const recipe = await recipesService.createRecipe(recipeData, userId);
-
-  res.status(201).json(recipe);
+    res.status(201).json(recipe);
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const deleteRecipeController = async (req, res) => {

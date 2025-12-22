@@ -7,9 +7,11 @@ import {
   Area,
   User,
 } from "../db/models/index.js";
-import { Sequelize, Op } from "sequelize";
 import { nanoid } from "nanoid";
+import { Sequelize, Op } from "sequelize";
 import sequelize from "../db/sequelize.js";
+import parseIngredients from "../helpers/parseIngredients.js";
+import uploadRecipeThumbToS3 from "../helpers/uploadRecipeThumbToS3.js";
 
 const getRecipeIdsByIngredient = async (ingredientId) => {
   const links = await RecipeIngredient.findAll({
@@ -188,31 +190,56 @@ export const getPopularRecipes = async ({ page, limit }, userId) => {
   });
 };
 
-export const createRecipe = async (recipeData, userId) => {
+export const createRecipe = async (recipeData, userId, file) => {
+  if (!file) {
+    throw new Error("THUMB_REQUIRED");
+  }
+
+  const ingredients = parseIngredients(recipeData.ingredients);
+
+  if (!recipeData.title) throw new Error("TITLE_REQUIRED");
+  if (!recipeData.categoryid) throw new Error("CATEGORY_REQUIRED");
+  if (!recipeData.instructions) throw new Error("INSTRUCTIONS_REQUIRED");
+  if (
+    recipeData.time === undefined ||
+    recipeData.time === null ||
+    recipeData.time === ""
+  ) {
+    throw new Error("TIME_REQUIRED");
+  }
+
   const recipeId = await sequelize.transaction(async (t) => {
+    const id = nanoid();
+
+    const thumbKey = await uploadRecipeThumbToS3(file, id);
+
     const recipe = await Recipe.create(
       {
-        ...recipeData,
-        id: nanoid(),
+        id,
         userid: userId,
+        title: recipeData.title,
+        description: recipeData.description ?? "",
+        instructions: recipeData.instructions,
+        categoryid: recipeData.categoryid,
+        areaid: recipeData.areaid ?? null,
+        time: recipeData.time,
+        thumb: thumbKey,
       },
       { transaction: t }
     );
 
-    const ingredientsPayload = recipeData.ingredients.map((ing) => ({
+    const ingredientsPayload = ingredients.map((ing) => ({
       recipeid: recipe.id,
       ingredientid: ing.id,
       measure: ing.measure ?? "",
     }));
 
-    await RecipeIngredient.bulkCreate(ingredientsPayload, {
-      transaction: t,
-    });
+    await RecipeIngredient.bulkCreate(ingredientsPayload, { transaction: t });
 
     return recipe.id;
   });
 
-  return await getRecipeById(recipeId);
+  return getRecipeById(recipeId, userId);
 };
 
 export const deleteRecipe = async (recipeId) => {
