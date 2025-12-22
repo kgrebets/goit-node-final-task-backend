@@ -88,6 +88,7 @@ export const getRecipes = async ({
 export const getRecipeById = async (id, userId) => {
   const attributes = [
     "id",
+    "userid",
     "title",
     "time",
     "description",
