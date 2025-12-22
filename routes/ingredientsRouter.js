@@ -44,31 +44,33 @@ const ingredientsRouter = Router();
  *               properties:
  *                 total:
  *                   type: integer
- *                   example: 2871
+ *                   example: 574
  *                 page:
  *                   type: integer
  *                   example: 1
  *                 totalPages:
  *                   type: integer
- *                   example: 240
+ *                   example: 48
  *                 results:
  *                   type: array
  *                   items:
  *                     type: object
+ *                     required: [id, name, img]
  *                     properties:
- *                       _id:
+ *                       id:
  *                         type: string
- *                         example: "640c2dd963a319ea671e37aa"
+ *                         example: "640c2dd963a319ea671e383b"
  *                       name:
  *                         type: string
- *                         example: "Squid"
- *                       desc:
+ *                         example: "Ackee"
+ *                       description:
  *                         type: string
- *                         example: "A type of cephalopod..."
+ *                         example: "A fruit that is native to West Africa..."
  *                       img:
  *                         type: string
- *                         example: "https://ftp.goit.study/img/so-yummy/ingredients/640c2dd963a319ea671e37aa.png"
+ *                         example: "https://ftp.goit.study/img/so-yummy/ingredients/640c2dd963a319ea671e383b.png"
  */
+
 ingredientsRouter.get(
   "/",
   validateQuery(getIngredientsSchema),
